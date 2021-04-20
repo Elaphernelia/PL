@@ -1,0 +1,7 @@
+type null pointer
+call 3.4
+if then else endif
+
+#comentario
+
+identificador 3
