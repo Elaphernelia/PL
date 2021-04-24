@@ -1,0 +1,4 @@
+int numero
+ &&
+ numero = 5;
+ numero = (numero + numero) / 7
