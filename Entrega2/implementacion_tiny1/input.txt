@@ -32,7 +32,7 @@ proc lee_nombres(tListaNombres & nombres) {
 }; # Fin del procedimiento lee_nombres
 
 # Construye un arbol de búsqueda sin duplicados con los nombres leídos
-# Hace un uso global de las variables 'nombres’ y 'arbol' declaradas en
+# Hace un uso global de las variables 'nombres' y 'arbol' declaradas en
 # el programa principal
 proc construye_arbol() {
     var int i; # para iterar sobre la lista de nombres
