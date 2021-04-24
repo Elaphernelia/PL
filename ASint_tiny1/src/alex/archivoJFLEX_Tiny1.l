@@ -1,18 +1,25 @@
 package alex;
-%EL QUE FUNCIONA
+
+import errors.GestionErroresTinyUno;
+
 %%
 %cup
 %line
 %column
+%public
 %class AnalizadorLexicoTinyUno
 %type  UnidadLexica
 %unicode
 
 %{
-  private ALexOperations ops;
-  public String lexema() {return yytext();}
-  public int fila() {return yyline+1;}
-  public int columna() {return yycolumn+1;}
+    private ALexOperations ops;
+    private GestionErroresTinyUno errores;
+    public String lexema() {return yytext();}
+    public int fila() {return yyline+1;}
+    public int columna() {return yycolumn+1;}
+    public void fijaGestionErrores(GestionErroresTinyUno errores) {
+        this.errores = errores;
+    }
 %}
 
 %eofval{
