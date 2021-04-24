@@ -18,20 +18,94 @@ init with {:
    alex.fijaGestionErrores(errores);
 :};
 
+terminal     NOT, POR, DIV, MENOR, MAYOR, MENIG, MAYIG, IGUAL, DESIGUAL, AND, OR, 
+ 			 MAS, MENOS, IGUALDAD, PAP, PCIER, PUNTOCOM, SEPARADOR, MODULO, SQAP,
+ 			 SQCIER, CORAP, CORCIER, PUNTO, COMA, FLECHA, AMPSAND, INT, REAL,
+ 			 BOOL, TRUE, FALSE, STRING, NULL, PROC, IF, THEN, ELSE, ENDIF, WHILE,
+ 			 DO, ENDWHILE, CALL, RECORD, ARRAY, OF, POINTER, NEW, DELETE, READ, WRITE,
+ 			 NL, VAR, TYPE, IDENTIFICADOR, LITENT, LITREAL, LITCAD ; // , EOF;
 
-terminal     DONDE, EVALUA, IDEN, ENT, REAL, MAS,
-             MENOS, POR, DIV, IGUAL, COMA, PAP, PCIERRE;
+non terminal Programa, Decs, LDecs, Dec, ParamsF, LParamFOpc, LParamF, ParamF, TypN,
+             LCampos, Campo, BaseType, BasicType, Insts, Inst, LInsts, ParamsR, LParamROpc,
+             LParamR, Bloq, BloqOpc, E0, E1, E2, E3, E4, E5, E6, E7, OpIn0AsocD, OpIn0NoAsoc,
+             OpIn1AsocI, OpIn2AsocI, OpIn3NoAsoc, OpPre4NoAsoc, OpPre4Asoc, OpPos5Asoc, OpPre6Asoc;
 
-non terminal  S, Ds, LDs, D, E0, E1, E2, OP0, OP1;
-
-S   ::= EVALUA E0 Ds ;
-Ds  ::= DONDE LDs | ;
-LDs ::= LDs COMA D | D ;
-D   ::= IDEN IGUAL E0 ;
-E0  ::= E0 OP0 E1  | E1 ;
-E1  ::= E1 OP1 E2  | E2 ;
-E2  ::= ENT  | REAL  | IDEN  | PAP E0 PCIERRE ;  
-OP0 ::= MAS  | MENOS ;
-OP1 ::= POR | DIV ;
+Programa	 ::= Decs Insts ; // EOF ; 
+Decs		 ::= ;
+Decs         ::= LDecs SEPARADOR ;
+LDecs 		 ::= Dec ;
+LDecs		 ::= LDecs PUNTOCOM Dec ;
+Dec          ::= VAR TypN IDENTIFICADOR ;
+Dec          ::= TYPE TypN IDENTIFICADOR ;
+Dec          ::= PROC IDENTIFICADOR ParamsF Bloq ;
+ParamsF      ::= PAP LParamFOpc PCIER ;
+LParamFOpc   ::= ;
+LParamFOpc   ::= LParamF ;
+LParamF      ::= ParamF ;
+LParamF      ::= LParamF COMA ParamF ;
+ParamF       ::= TypN AMPSAND IDENTIFICADOR ;
+ParamF       ::= TypN IDENTIFICADOR;
+TypN         ::= BaseType ;
+TypN         ::= ARRAY SQAP LITENT SQCIER OF BaseType ;
+TypN         ::= RECORD CORAP LCampos CORCIER ;
+TypN         ::= POINTER BaseType;
+LCampos      ::= Campo ;
+LCampos      ::= LCampos PUNTOCOM Campo ;
+Campo        ::= TypN IDENTIFICADOR ;
+BaseType     ::= BasicType ;
+BaseType     ::= IDENTIFICADOR ;
+BasicType    ::= INT | REAL | BOOL | STRING ;
+Insts        ::= Inst ;
+Insts        ::= Insts PUNTOCOM Inst ;
+Inst         ::= E0 IGUALDAD E0 ;
+Inst         ::= IF E0 THEN LInsts ENDIF ;
+Inst         ::= IF E0 THEN LInsts ELSE LInsts ENDIF ;
+Inst         ::= WHILE E0 DO LInsts ENDWHILE ;
+Inst         ::= READ E0 ;
+Inst         ::= WRITE E0 ;
+Inst         ::= NL;
+Inst         ::= NEW E0 ;
+Inst         ::= DELETE E0 ;
+Inst         ::= CALL IDENTIFICADOR ParamsR ;
+Inst         ::= Bloq ;
+LInsts       ::= ;
+LInsts       ::= Insts ;
+ParamsR      ::= PAP LParamROpc PCIER ;
+LParamROpc   ::= ;
+LParamROpc   ::= LParamR ;
+LParamR      ::= E0 ;
+LParamR      ::= LParamR COMA E0 ;
+Bloq         ::= CORAP BloqOpc CORCIER ;
+BloqOpc      ::= ;
+BloqOpc      ::= Programa ;
+E0           ::= E1 OpIn0AsocD E0 ;
+E0           ::= E1 OpIn0NoAsoc E1 ;
+E0           ::= E1 ;
+E1           ::= E1 OpIn1AsocI E2 ;
+E1           ::= E2 ;
+E2           ::= E2 OpIn2AsocI E3 ;
+E2           ::= E3 ;
+E3           ::= E4 OpIn3NoAsoc E4 ;
+E3           ::= E4 ;
+E4           ::= OpPre4NoAsoc E5 ;
+E4           ::= OpPre4Asoc E4 ;
+E4           ::= E5 ;
+E5           ::= E5 OpPos5Asoc ;
+E5           ::= E6 ;
+E6           ::= OpPre6Asoc E6 ;
+E6           ::= E7 ;
+E7           ::= PAP E0 PCIER;
+E7           ::= LITENT | LITREAL | LITCAD | TRUE | FALSE | IDENTIFICADOR | NULL ; 
+OpIn0AsocD   ::= MAS ;
+OpIn0NoAsoc  ::= MENOS ;
+OpIn1AsocI   ::= AND | OR ;
+OpIn2AsocI   ::= MENOR | MAYOR | MENIG | MAYIG | IGUAL | DESIGUAL ;
+OpIn3NoAsoc  ::= POR | DIV | MODULO ;
+OpPre4NoAsoc ::= MENOS ;
+OpPre4Asoc   ::= NOT ;
+OpPos5Asoc   ::= SQAP E0 SQCIER ;
+OpPos5Asoc   ::= PUNTO IDENTIFICADOR ;
+OpPos5Asoc   ::= FLECHA IDENTIFICADOR ;
+OpPre6Asoc   ::= POR ;
 
 
