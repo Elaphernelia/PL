@@ -1,0 +1,104 @@
+options  {
+  STATIC=false;
+}  
+PARSER_BEGIN(AnalizadorSintacticoTinyUno)
+package asint.desc;
+
+public class AnalizadorSintacticoTinyUno {}
+PARSER_END(AnalizadorSintacticoTinyUno)
+  TOKEN:{<#letra:["a"-"z","A"-"Z"]>}
+  TOKEN:{<#digito:["0"-"9"]>}
+  TOKEN:{<#dig_nozero:["1"-"9"]>}
+  TOKEN:{<#entero:(["+","-"])? (<dig_nozero> (<digito>)*|"0")>} 
+  TOKEN:{<#decimal:"." ((<digito>)* <dig_nozero>|"0")>}
+  TOKEN:{<#exponencial:("e"|"E") <entero>>}
+  TOKEN:{<#real: <entero> (<decimal>|<exponencial>|<decimal><exponencial>)>}
+  SKIP:{<["\t"," ","\r","\b","\n"]>}  
+  SKIP:{<"#"(~["\n"])*>}  
+  TOKEN:{<Not:"not">}
+  TOKEN:{<And:"and">}
+  TOKEN:{<Or:"or">}
+  TOKEN:{<Int:"int">}
+  TOKEN:{<Realw:"real">}
+  TOKEN:{<Bool:"bool">}
+  TOKEN:{<True:"true">}
+  TOKEN:{<False:"false">}
+  TOKEN:{<String:"string">}
+  TOKEN:{<Null:"null">}
+  TOKEN:{<Proc:"proc">}
+  TOKEN:{<If:"if">}
+  TOKEN:{<Then:"then">}
+  TOKEN:{<Else:"else">}
+  TOKEN:{<Endif:"endif">}
+  TOKEN:{<While:"while">}
+  TOKEN:{<Do:"do">}
+  TOKEN:{<Endwhile:"endwhile">}
+  TOKEN:{<Call:"call">}
+  TOKEN:{<Record:"record">}
+  TOKEN:{<Array:"array">}
+  TOKEN:{<Of:"of">}
+  TOKEN:{<Pointer:"pointer">}
+  TOKEN:{<New:"new">}
+  TOKEN:{<Delete:"delete">}
+  TOKEN:{<Read:"read">}
+  TOKEN:{<Write:"write">}
+  TOKEN:{<Nl:"nl">}
+  TOKEN:{<Var:"var">}
+  TOKEN:{<Type:"type">}
+  TOKEN:{<Identificador:<letra>(<letra>|<digito>|"_")*>}
+  TOKEN:{<LitEnt:<entero>>}
+  TOKEN:{<LitReal:<real>>}
+  TOKEN:{<LitCad:"\"" (~["\n","\b","\r","\""])* "\"">}
+  
+  void Sp()          : {} { Programa() <EOF> }
+  void Programa()    : {} { Decs() Insts()}
+  void Decs()        : {} { LDecs() "&&" | {} }
+  void LDecs()       : {} { Dec() RLDecs() }
+  void RLDecs()      : {} { ";" Dec() RLDecs() | {} }
+  void Dec()         : {} {<Var> TypN() <Identificador> |<Type> TypN() <Identificador>|<Proc> <Identificador> ParamsF() Bloq()}
+  void ParamsF()     : {} { "(" LParamFOpc() ")"}
+  void LParamFOpc()  : {} { LParamF() | {} }
+  void LParamF()     : {} { ParamF() RLParamF() }
+  void RLParamF()    : {} { "," ParamF() RLParamF() | {} } 
+  void ParamF()      : {} { TypN() RParamF() }
+  void RParamF()     : {} { <Identificador> | "&" <Identificador>}
+  void TypN()        : {} { BaseType() | <Array> "[" <LitEnt> "]" <Of> BaseType() | <Record> "{" LCampos() "}"| <Pointer> BaseType() }
+  void LCampos()     : {} { Campo() RLCampos() }
+  void RLCampos()    : {} { ";" Campo() RLCampos() | {} }
+  void Campo()       : {} { TypN() <Identificador> }
+  void BaseType()    : {} { BasicType() | <Identificador> }
+  void BasicType()   : {} { <Int> | <Realw> | <Bool> | <String> }
+  void Insts()       : {} { Inst() RInsts() }
+  void RInsts()      : {} { ";" Inst() RInsts() | {} }
+  void Inst()        : {} { E0() "=" E0() | <If> E0() <Then> LInsts() RInst() | <While> E0() <Do> LInsts() <Endwhile> | <Read> E0() | <Write> E0() | <Nl> | <New> E0() | <Delete> E0() | <Call> <Identificador> ParamsR() | Bloq() }
+  void RInst()       : {} { <Endif> | <Else> LInsts() <Endif>}
+  void LInsts()      : {} { Insts() | {} }
+  void ParamsR()     : {} { "(" LParamROpc() ")"}
+  void LParamROpc()  : {} { LParamR() | {} }
+  void LParamR()     : {} { E0() RLParamR()}
+  void RLParamR()    : {} { "," E0() RLParamR()| {} }
+  void Bloq()        : {} { "{" BloqOpc() "}"}
+  void BloqOpc()     : {} { Programa() | {} }
+  void E0()          : {} { E1() RE0() }
+  void RE0()         : {} { OpIn0AsocD() E0() | OpIn0NoAsoc() E1() | {} }
+  void E1()          : {} { E2() RE1() }
+  void RE1()         : {} { OpIn1AsocI() E2() RE1()| {}}
+  void E2()          : {} { E3() RE2() }
+  void RE2()         : {} { OpIn2AsocI() E3() RE2()| {}}
+  void E3()          : {} { E4() RE3()}
+  void RE3()         : {} { OpIn3NoAsoc() E4() | {}}
+  void E4()          : {} { OpPre4Asoc() E4() | OpPre4NoAsoc() E5() | E5()}
+  void E5()          : {} { E6() RE5()}
+  void RE5()         : {} { OpPos5Asoc() RE5() | {}}
+  void E6()          : {} { OpPre6Asoc() E6() | E7()}
+  void E7()          : {} { "(" E0() ")"| <LitEnt> | <LitReal> | <LitCad> | <True> | <False> | <Identificador> | <Null> }
+  void OpIn0AsocD()  : {} { "+"}
+  void OpIn0NoAsoc() : {} { "-"}
+  void OpIn1AsocI()  : {} { <And> | <Or>}
+  void OpIn2AsocI()  : {} { "<" | "<=" | ">" | ">=" | "==" | "!=" }
+  void OpIn3NoAsoc() : {} { "*" | "/" | "%"}
+  void OpPre4NoAsoc(): {} { "-"}
+  void OpPre4Asoc()  : {} { <Not>}
+  void OpPos5Asoc()  : {} { "[" E0() "]" | "." <Identificador> | "->" <Identificador>}
+  void OpPre6Asoc()  : {} { "*"}
+  
