@@ -40,10 +40,10 @@ non terminal Insts LInsts, Insts, Inst;
 non terminal Decs  Decs, LDecs;
 non terminal Dec   Dec;
 non terminal Exp   E0, E1, E2, E3, E4, E5, E6, E7;
-non terminal Op    OpIn0AsocD, OpIn0NoAsoc, OpIn1AsocI, OpIn2AsocI, OpIn3NoAsoc, OpPre4NoAsoc, OpPre4Asoc, OpPos5Asoc, OpPre6Asoc;
+non terminal       OpIn0AsocD, OpIn0NoAsoc, OpIn1AsocI, OpIn2AsocI, OpIn3NoAsoc, OpPre4NoAsoc, OpPre4Asoc, OpPos5Asoc, OpPre6Asoc;
 
-Programa	 ::= Decs:Decs Insts:Insts
-	{: RESULT = sem.prog(decs,insts) :}; // EOF ; 
+Programa	 ::= Decs:decs Insts:insts
+	{: RESULT = sem.prog(decs,insts); :}; // EOF ; 
 Decs		 ::= ;
 Decs         ::= LDecs SEPARADOR ;
 LDecs 		 ::= Dec ;

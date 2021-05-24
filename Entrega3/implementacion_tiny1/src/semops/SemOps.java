@@ -14,6 +14,7 @@ public class SemOps extends TinyASint {
 			case "not": return not(arg);
 			case "*": return indireccion(arg);
 		}
+		throw new UnsupportedOperationException("exp " + op);
 	}
 	
 	public Exp opera_dos(String op, Exp arg0, Exp arg1) {
