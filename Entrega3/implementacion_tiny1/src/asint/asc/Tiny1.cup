@@ -3,9 +3,14 @@ package asint.asc;
 import java_cup.runtime.*;
 import alex.AnalizadorLexicoTinyUno;
 import alex.UnidadLexica;
+import semops.SemOps;
+import asint.TinyASint.*;
 import errors.GestionErroresTinyUno;
 
 scan with {: return getScanner().next_token(); :};
+action code {:
+	private SemOps sem = new SemOps();
+:};
 parser code {: 
    private GestionErroresTinyUno errores;
    public void syntax_error(Symbol unidadLexica) {
@@ -23,14 +28,22 @@ terminal     NOT, POR, DIV, MENOR, MAYOR, MENIG, MAYIG, IGUAL, DESIGUAL, AND, OR
  			 SQCIER, CORAP, CORCIER, PUNTO, COMA, FLECHA, AMPSAND, INT, REAL,
  			 BOOL, TRUE, FALSE, STRING, NULL, PROC, IF, THEN, ELSE, ENDIF, WHILE,
  			 DO, ENDWHILE, CALL, RECORD, ARRAY, OF, POINTER, NEW, DELETE, READ, WRITE,
- 			 NL, VAR, TYPE, IDENTIFICADOR, LITENT, LITREAL, LITCAD ; // , EOF;
+ 			 NL, VAR, TYPE; // , EOF;
+terminal StringLocalizado IDENTIFICADOR, LITENT, LITREAL, LITCAD;
 
-non terminal Programa, Decs, LDecs, Dec, ParamsF, LParamFOpc, LParamF, ParamF, TypN,
-             LCampos, Campo, BaseType, BasicType, Insts, Inst, LInsts, ParamsR, LParamROpc,
-             LParamR, Bloq, BloqOpc, E0, E1, E2, E3, E4, E5, E6, E7, OpIn0AsocD, OpIn0NoAsoc,
-             OpIn1AsocI, OpIn2AsocI, OpIn3NoAsoc, OpPre4NoAsoc, OpPre4Asoc, OpPos5Asoc, OpPre6Asoc;
+non terminal ParamsF, LParamFOpc, LParamF, ParamF, TypN,
+             LCampos, Campo, BaseType, BasicType, ParamsR, LParamROpc,
+             LParamR, Bloq, BloqOpc;
 
-Programa	 ::= Decs Insts ; // EOF ; 
+non terminal Prog  Programa;
+non terminal Insts LInsts, Insts, Inst;
+non terminal Decs  Decs, LDecs;
+non terminal Dec   Dec;
+non terminal Exp   E0, E1, E2, E3, E4, E5, E6, E7;
+non terminal Op    OpIn0AsocD, OpIn0NoAsoc, OpIn1AsocI, OpIn2AsocI, OpIn3NoAsoc, OpPre4NoAsoc, OpPre4Asoc, OpPos5Asoc, OpPre6Asoc;
+
+Programa	 ::= Decs:Decs Insts:Insts
+	{: RESULT = sem.prog(decs,insts) :}; // EOF ; 
 Decs		 ::= ;
 Decs         ::= LDecs SEPARADOR ;
 LDecs 		 ::= Dec ;
