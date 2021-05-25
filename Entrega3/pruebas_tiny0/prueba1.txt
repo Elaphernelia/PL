@@ -1,0 +1,7 @@
+real No_saldra_parentesis;
+int Si_saldran_parentesis;
+bool Voy_A_Aprobar
+&&
+No_saldra_parentesis = 2 + (3 * 5) + 3;
+Si_saldran_parentesis = (2 + 3) * (5 + 3);
+Voy_A_Aprobar = true
