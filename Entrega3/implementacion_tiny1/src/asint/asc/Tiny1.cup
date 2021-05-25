@@ -44,7 +44,8 @@ non terminal       OpIn0AsocD, OpIn0NoAsoc, OpIn1AsocI, OpIn2AsocI, OpIn3NoAsoc,
 
 Programa	 ::= Decs:decs Insts:insts
 	{: RESULT = sem.prog(decs,insts); :}; // EOF ; 
-Decs		 ::= ;
+Decs		 ::= 
+	{: RESULT = null; :};
 Decs         ::= LDecs SEPARADOR ;
 LDecs 		 ::= Dec ;
 LDecs		 ::= LDecs PUNTOCOM Dec ;
@@ -109,15 +110,42 @@ E6           ::= OpPre6Asoc E6 ;
 E6           ::= E7 ;
 E7           ::= PAP E0 PCIER;
 E7           ::= LITENT | LITREAL | LITCAD | TRUE | FALSE | IDENTIFICADOR | NULL ; 
-OpIn0AsocD   ::= MAS ;
-OpIn0NoAsoc  ::= MENOS ;
-OpIn1AsocI   ::= AND | OR ;
-OpIn2AsocI   ::= MENOR | MAYOR | MENIG | MAYIG | IGUAL | DESIGUAL ;
-OpIn3NoAsoc  ::= POR | DIV | MODULO ;
-OpPre4NoAsoc ::= MENOS ;
-OpPre4Asoc   ::= NOT ;
-OpPos5Asoc   ::= SQAP E0 SQCIER ;
-OpPos5Asoc   ::= PUNTO IDENTIFICADOR ;
-OpPos5Asoc   ::= FLECHA IDENTIFICADOR ;
-OpPre6Asoc   ::= POR ;
+OpIn0AsocD   ::= MAS 
+	{: RESULT = "+"; :};
+OpIn0NoAsoc  ::= MENOS 
+	{: RESULT = "-"; :};
+OpIn1AsocI   ::= AND 
+	{: RESULT = "and"; :};
+OpIn1AsocI   ::= OR
+	{: RESULT = "or"; :};
+OpIn2AsocI   ::= MENOR 
+	{: RESULT = "<"; :};
+OpIn2AsocI   ::=  MAYOR
+	{: RESULT = ">"; :};
+OpIn2AsocI   ::= MENIG
+	{: RESULT = "<="; :};
+OpIn2AsocI   ::= MAYIG
+	{: RESULT = ">="; :};
+OpIn2AsocI   ::= IGUAL
+	{: RESULT = "=="; :};
+OpIn2AsocI   ::= DESIGUAL 
+	{: RESULT = "!="; :};
+OpIn3NoAsoc  ::= POR 
+	{: RESULT = "*"; :};
+OpIn3NoAsoc  ::= DIV
+	{: RESULT = "/"; :};
+OpIn3NoAsoc  ::= MODULO
+	{: RESULT = "%"; :};
+OpPre4NoAsoc ::= MENOS 
+	{: RESULT = "+"; :};
+OpPre4Asoc   ::= NOT 
+	{: RESULT = "not"; :};
+OpPos5Asoc   ::= SQAP E0 SQCIER 
+	{: RESULT = "index"; :};
+OpPos5Asoc   ::= PUNTO IDENTIFICADOR 
+	{: RESULT = "reg"; :};
+OpPos5Asoc   ::= FLECHA IDENTIFICADOR 
+	{: RESULT = "reg"; :};
+OpPre6Asoc   ::= POR 
+	{: RESULT = "*"; :};
 
