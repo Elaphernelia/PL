@@ -3,6 +3,7 @@ package asint.asc;
 import java_cup.runtime.*;
 import alex.AnalizadorLexicoTinyUno;
 import alex.UnidadLexica;
+import alex.StringLocalizado;
 import semops.SemOps;
 import asint.TinyASint.*;
 import errors.GestionErroresTinyUno;
@@ -12,10 +13,10 @@ action code {:
 	private SemOps sem = new SemOps();
 :};
 parser code {: 
-   private GestionErroresTinyUno errores;
-   public void syntax_error(Symbol unidadLexica) {
-     errores.errorSintactico((UnidadLexica)unidadLexica);
-   }
+    private GestionErroresTinyUno errores;
+    public void syntax_error(Symbol unidadLexica) {
+        errores.errorSintactico((UnidadLexica)unidadLexica);
+    }
 :};
 init with {: 
    errores = new GestionErroresTinyUno();
@@ -31,85 +32,173 @@ terminal     NOT, POR, DIV, MENOR, MAYOR, MENIG, MAYIG, IGUAL, DESIGUAL, AND, OR
  			 NL, VAR, TYPE; // , EOF;
 terminal StringLocalizado IDENTIFICADOR, LITENT, LITREAL, LITCAD;
 
-non terminal ParamsF, LParamFOpc, LParamF, ParamF, TypN,
-             LCampos, Campo, BaseType, BasicType, ParamsR, LParamROpc,
-             LParamR, Bloq, BloqOpc;
-
-non terminal Prog  Programa;
-non terminal Insts LInsts, Insts, Inst;
-non terminal Decs  Decs, LDecs;
-non terminal Dec   Dec;
-non terminal Exp   E0, E1, E2, E3, E4, E5, E6, E7;
-non terminal       OpIn0AsocD, OpIn0NoAsoc, OpIn1AsocI, OpIn2AsocI, OpIn3NoAsoc, OpPre4NoAsoc, OpPre4Asoc, OpPos5Asoc, OpPre6Asoc;
+non terminal Prog    Programa;
+non terminal PInst   LInsts;
+non terminal Insts   Insts;
+non terminal Inst    Inst;
+non terminal Decs    Decs, LDecs;
+non terminal Dec     Dec;
+non terminal Tipo    TypN, BaseType, BasicType;
+non terminal PFs     ParamsF, LParamF, LParamFOpc;
+non terminal PF      ParamF;
+non terminal PR      ParamsR, LParamR, LParamROpc;
+non terminal Bloque  Bloq, BloqOpc;
+non terminal Campos  LCampos;
+non terminal Campo   Campo;
+non terminal Exp     E0, E1, E2, E3, E4, E5, E6, E7;
+non terminal String  OpIn0AsocD, OpIn0NoAsoc, OpIn1AsocI, OpIn2AsocI, OpIn3NoAsoc, OpPre4NoAsoc, OpPre4Asoc, OpPre6Asoc;
+non terminal OpInfo  OpPos5Asoc;
 
 Programa	 ::= Decs:decs Insts:insts
 	{: RESULT = sem.prog(decs,insts); :}; // EOF ; 
 Decs		 ::= 
 	{: RESULT = null; :};
-Decs         ::= LDecs SEPARADOR ;
-LDecs 		 ::= Dec ;
-LDecs		 ::= LDecs PUNTOCOM Dec ;
-Dec          ::= VAR TypN IDENTIFICADOR ;
-Dec          ::= TYPE TypN IDENTIFICADOR ;
-Dec          ::= PROC IDENTIFICADOR ParamsF Bloq ;
-ParamsF      ::= PAP LParamFOpc PCIER ;
-LParamFOpc   ::= ;
-LParamFOpc   ::= LParamF ;
-LParamF      ::= ParamF ;
-LParamF      ::= LParamF COMA ParamF ;
-ParamF       ::= TypN AMPSAND IDENTIFICADOR ;
-ParamF       ::= TypN IDENTIFICADOR;
-TypN         ::= BaseType ;
-TypN         ::= ARRAY SQAP LITENT SQCIER OF BaseType ;
-TypN         ::= RECORD CORAP LCampos CORCIER ;
-TypN         ::= POINTER BaseType;
-LCampos      ::= Campo ;
-LCampos      ::= LCampos PUNTOCOM Campo ;
-Campo        ::= TypN IDENTIFICADOR ;
-BaseType     ::= BasicType ;
-BaseType     ::= IDENTIFICADOR ;
-BasicType    ::= INT | REAL | BOOL | STRING ;
-Insts        ::= Inst ;
-Insts        ::= Insts PUNTOCOM Inst ;
-Inst         ::= E0 IGUALDAD E0 ;
-Inst         ::= IF E0 THEN LInsts ENDIF ;
-Inst         ::= IF E0 THEN LInsts ELSE LInsts ENDIF ;
-Inst         ::= WHILE E0 DO LInsts ENDWHILE ;
-Inst         ::= READ E0 ;
-Inst         ::= WRITE E0 ;
-Inst         ::= NL;
-Inst         ::= NEW E0 ;
-Inst         ::= DELETE E0 ;
-Inst         ::= CALL IDENTIFICADOR ParamsR ;
-Inst         ::= Bloq ;
-LInsts       ::= ;
-LInsts       ::= Insts ;
-ParamsR      ::= PAP LParamROpc PCIER ;
-LParamROpc   ::= ;
-LParamROpc   ::= LParamR ;
-LParamR      ::= E0 ;
-LParamR      ::= LParamR COMA E0 ;
-Bloq         ::= CORAP BloqOpc CORCIER ;
-BloqOpc      ::= ;
-BloqOpc      ::= Programa ;
-E0           ::= E1 OpIn0AsocD E0 ;
-E0           ::= E1 OpIn0NoAsoc E1 ;
-E0           ::= E1 ;
-E1           ::= E1 OpIn1AsocI E2 ;
-E1           ::= E2 ;
-E2           ::= E2 OpIn2AsocI E3 ;
-E2           ::= E3 ;
-E3           ::= E4 OpIn3NoAsoc E4 ;
-E3           ::= E4 ;
-E4           ::= OpPre4NoAsoc E5 ;
-E4           ::= OpPre4Asoc E4 ;
-E4           ::= E5 ;
-E5           ::= E5 OpPos5Asoc ;
-E5           ::= E6 ;
-E6           ::= OpPre6Asoc E6 ;
-E6           ::= E7 ;
-E7           ::= PAP E0 PCIER;
-E7           ::= LITENT | LITREAL | LITCAD | TRUE | FALSE | IDENTIFICADOR | NULL ; 
+Decs         ::= LDecs:decs SEPARADOR 
+	{: RESULT = decs; :};
+LDecs 		 ::= Dec:dec 
+	{: RESULT = sem.decs_una(dec); :};
+LDecs		 ::= LDecs:decs PUNTOCOM Dec:dec 
+	{: RESULT = sem.decs_muchas(decs,dec); :};
+Dec          ::= VAR TypN:typn IDENTIFICADOR:id 
+	{: RESULT = sem.var(typn, id); :} ;
+Dec          ::= TYPE TypN:typn IDENTIFICADOR:id
+	{: RESULT = sem.type(typn, id); :} ;
+Dec          ::= PROC IDENTIFICADOR:id ParamsF:params Bloq:bloque
+	{: RESULT = sem.proc(id,params,bloque); :} ;
+ParamsF      ::= PAP LParamFOpc:params PCIER
+	{: RESULT = params; :};
+LParamFOpc   ::= 
+	{: RESULT = sem.param_f_sin(); :};
+LParamFOpc   ::= LParamF:lparam
+	{: RESULT = lparam; :};
+LParamF      ::= ParamF:paramf
+	{: RESULT = sem.param_f_con_una(paramf); :};
+LParamF      ::= LParamF:lparamf COMA ParamF:paramf
+	{: RESULT = sem.param_f_con_muchas(lparamf, paramf); :} ;
+ParamF       ::= TypN:typn AMPSAND IDENTIFICADOR:id 
+	{: RESULT = sem.param_f_ref(typn,id); :};
+ParamF       ::= TypN:typn IDENTIFICADOR:id
+	{: RESULT = sem.param_f_noref(typn,id); :};
+TypN         ::= BaseType:basetype
+	{: RESULT = basetype; :};
+TypN         ::= ARRAY SQAP LITENT:litent SQCIER OF BaseType:basetype
+	{: RESULT = sem.tipo_array(litent,basetype); :};
+TypN         ::= RECORD CORAP LCampos:campos CORCIER
+	{: RESULT = sem.tipo_record(campos); :};
+TypN         ::= POINTER BaseType:basetype
+	{: RESULT = sem.tipo_pointer(basetype); :};
+LCampos      ::= Campo:campo
+	{: RESULT = sem.campos_uno(campo); :};
+LCampos      ::= LCampos:campos PUNTOCOM Campo:campo
+	{: RESULT = sem.campos_muchos(campos,campo); :};
+Campo        ::= TypN:typn IDENTIFICADOR:id 
+	{: RESULT = sem.campo(typn, id); :};
+BaseType     ::= BasicType:basictype
+	{: RESULT = basictype; :};
+BaseType     ::= IDENTIFICADOR:id
+	{: RESULT = sem.tipo_iden(id); :} ;
+BasicType    ::= INT 
+	{: RESULT = sem.tipo_int(); :};
+BasicType    ::= REAL
+	{: RESULT = sem.tipo_real(); :};
+BasicType    ::= BOOL
+	{: RESULT = sem.tipo_bool(); :};
+BasicType    ::= STRING 
+	{: RESULT = sem.tipo_string(); :};
+Insts        ::= Inst:inst
+	{: RESULT = sem.insts_una(inst); :} ;
+Insts        ::= Insts:insts PUNTOCOM Inst:inst
+	{: RESULT = sem.insts_muchas(insts, inst); :};
+Inst         ::= E0:e1 IGUALDAD E0:e2 
+	{: RESULT = sem.e_igual(e1, e2); :} ;
+Inst         ::= IF E0:e THEN LInsts:insts ENDIF
+	{: RESULT = sem.if_(e,insts); :};
+Inst         ::= IF E0:e THEN LInsts:insts1 ELSE LInsts:insts2 ENDIF 
+	{: RESULT = sem.ifelse(e,insts1,insts2); :};
+Inst         ::= WHILE E0:e DO LInsts:insts ENDWHILE
+	{: RESULT = sem.while_(e,insts); :};
+Inst         ::= READ E0:e
+	{: RESULT = sem.read(e); :};
+Inst         ::= WRITE E0:e
+	{: RESULT = sem.write(e); :};
+Inst         ::= NL
+	{: RESULT = sem.nl(); :};
+Inst         ::= NEW E0:e
+	{: RESULT = sem.new_(e); :};
+Inst         ::= DELETE E0:e
+	{: RESULT = sem.delete(e); :};
+Inst         ::= CALL IDENTIFICADOR:id ParamsR:params 
+	{: RESULT = sem.call(id,params); :};
+Inst         ::= Bloq:bloq
+	{: RESULT = sem.bl(bloq); :};
+LInsts       ::= 
+	{: RESULT = sem.lista_sin(); :};
+LInsts       ::= Insts:insts
+	{: RESULT = sem.lista_con(insts); :};
+ParamsR      ::= PAP LParamROpc:lparamropc PCIER
+	{: RESULT = lparamropc; :};
+LParamROpc   ::= 
+	{: RESULT = sem.param_r_sin(); :};
+LParamROpc   ::= LParamR:lparamr 
+	{: RESULT = lparamr; :};
+LParamR      ::= E0:e
+	{: RESULT = sem.param_r_con_una(e); :};
+LParamR      ::= LParamR:param COMA E0:e
+	{: RESULT = sem.param_r_con_muchas(param,e); :};
+Bloq         ::= CORAP BloqOpc:bloq CORCIER 
+	{: RESULT = bloq; :};
+BloqOpc      ::= 
+	{: RESULT = sem.bloque_sin(); :};
+BloqOpc      ::= Programa:prog
+	{: RESULT = sem.bloque_con(prog); :};
+E0           ::= E1:e1 OpIn0AsocD:op E0:e0 
+	{: RESULT = sem.opera_dos(op,e1,e0); :};
+E0           ::= E1:e1a OpIn0NoAsoc:op E1:e1b
+	{: RESULT = sem.opera_dos(op,e1a,e1b); :};
+E0           ::= E1:e
+	{: RESULT = e; :};
+E1           ::= E1:e1 OpIn1AsocI:op E2:e2
+	{: RESULT = sem.opera_dos(op,e1,e2); :};
+E1           ::= E2:e
+	{: RESULT = e; :};
+E2           ::= E2:e2 OpIn2AsocI:op E3:e3 
+	{: RESULT = sem.opera_dos(op,e2,e3); :};
+E2           ::= E3:e
+	{: RESULT = e; :};
+E3           ::= E4:e4a OpIn3NoAsoc:op E4:e4b
+	{: RESULT = sem.opera_dos(op,e4a,e4b); :};
+E3           ::= E4:e
+	{: RESULT = e; :};
+E4           ::= OpPre4NoAsoc:op E5:e5
+	{: RESULT = sem.opera_uno(op,e5); :};
+E4           ::= OpPre4Asoc:op E4:e4
+	{: RESULT = sem.opera_uno(op,e4); :};
+E4           ::= E5:e
+	{: RESULT = e; :};
+E5           ::= E5:e OpPos5Asoc:opinfo
+	{: RESULT = sem.opera_opposcincoasoc(opinfo.op,opinfo.a,opinfo.var,e); :};
+E5           ::= E6:e
+	{: RESULT = e; :};
+E6           ::= OpPre6Asoc:op E6:e6
+	{: RESULT = sem.opera_uno(op,e6); :};
+E6           ::= E7:e
+	{: RESULT = e; :};
+E7           ::= PAP E0:e PCIER
+	{: RESULT = e; :};
+E7           ::= LITENT:litent 
+	{: RESULT = sem.entero(litent); :};
+E7           ::= LITREAL:litreal
+	{: RESULT = sem.real(litreal); :}; 
+E7           ::= LITCAD:litcad 
+	{: RESULT = sem.cadena(litcad); :};
+E7           ::= TRUE
+	{: RESULT = sem.verdadero(); :};
+E7           ::= FALSE
+	{: RESULT = sem.falso(); :};
+E7           ::= IDENTIFICADOR:id
+	{: RESULT = sem.identificador(id); :};
+E7           ::= NULL
+	{: RESULT = sem.null_(); :}; 
 OpIn0AsocD   ::= MAS 
 	{: RESULT = "+"; :};
 OpIn0NoAsoc  ::= MENOS 
@@ -140,12 +229,12 @@ OpPre4NoAsoc ::= MENOS
 	{: RESULT = "+"; :};
 OpPre4Asoc   ::= NOT 
 	{: RESULT = "not"; :};
-OpPos5Asoc   ::= SQAP E0 SQCIER 
-	{: RESULT = "index"; :};
-OpPos5Asoc   ::= PUNTO IDENTIFICADOR 
-	{: RESULT = "reg"; :};
-OpPos5Asoc   ::= FLECHA IDENTIFICADOR 
-	{: RESULT = "reg"; :};
+OpPos5Asoc   ::= SQAP E0:e SQCIER 
+	{: RESULT = new OpInfo("index", e, null); :};
+OpPos5Asoc   ::= PUNTO IDENTIFICADOR:id 
+	{: RESULT = new OpInfo("reg", null, id); :};
+OpPos5Asoc   ::= FLECHA IDENTIFICADOR:id
+	{: RESULT = new OpInfo("reg", null, id); :};
 OpPre6Asoc   ::= POR 
 	{: RESULT = "*"; :};
 

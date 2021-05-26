@@ -8,7 +8,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 import alex.AnalizadorLexicoTinyUno;
+import asint.TinyASint.Prog;
 import asint.asc.ClaseLexica;
+import procesamientos.Impresion;
 import alex.UnidadLexica;
 
 public class Main {
@@ -37,6 +39,15 @@ public class Main {
 		asint.Sp();
 		System.out.println("OK");
 	}
+	
+	public static void astAsc(String fname) throws Exception {
+		AnalizadorLexicoTinyUno alex = new AnalizadorLexicoTinyUno(
+				new InputStreamReader(new FileInputStream(fname)));
+		asint.asc.AnalizadorSintacticoTinyUno asint = new asint.asc.AnalizadorSintacticoTinyUno(alex);
+		
+		Prog prog = (Prog) asint.parse().value;
+		prog.procesa(new Impresion());
+	}
 
 	public static void main(String[] args) throws Exception {
 		if (args.length != 2) {
@@ -47,7 +58,7 @@ public class Main {
 		if (args[1].equalsIgnoreCase("desc")) {
 			throw new UnsupportedOperationException("AST desc not supported yet");
 		} else if (args[1].equalsIgnoreCase("asc")) {
-			throw new UnsupportedOperationException("AST asc not supported yet");
+			astAsc(args[0]);
 		} else if (args[1].equalsIgnoreCase("asintdesc")) {
 			alexAsintDesc(args[0]);
 		} else if (args[1].equalsIgnoreCase("asintasc")) {

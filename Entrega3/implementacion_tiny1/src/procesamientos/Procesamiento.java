@@ -1,5 +1,6 @@
-package asint;
+package procesamientos;
 
+import asint.TinyASint;
 import asint.TinyASint.*;
 
 public interface Procesamiento {

@@ -1,43 +1,9 @@
 package asint;
 
+import alex.StringLocalizado;
+import procesamientos.Procesamiento;
+
 public class TinyASint {
-	public static class StringLocalizado {
-		private String _s;
-		private int _fila;
-		private int _col;
-		
-		public StringLocalizado(String s, int fila, int col) {
-			_s = s;
-			_fila = fila;
-			_col = col;
-		}
-		
-		public int fila() {
-			return _fila;
-		}
-		
-		public int col() {
-			return _col;
-		}
-		
-		@Override
-		public String toString() {
-			return _s;
-		}
-		
-		@Override
-		public boolean equals(Object o) {
-			return (o == this) || (
-				   (o instanceof StringLocalizado) &&
-				   (((StringLocalizado) o)._s.equals(_s)));
-		}
-		
-		@Override
-		public int hashCode() {
-			return _s.hashCode();
-		}
-	}
-	
 	/*************
 	 ** GENEROS **
 	 *************/
@@ -236,7 +202,7 @@ public class TinyASint {
 			return _tipo;
 		}
 		
-		public StringLocalizado type() {
+		public StringLocalizado typeName() {
 			return _type;
 		}
 		
@@ -370,14 +336,14 @@ public class TinyASint {
 	}
 	
 	public static class Tipo_array extends Tipo {
-		private Exp _tamanio;
+		private StringLocalizado _tamanio;
 		private Tipo _tipo;
 		
-		public Tipo_array(Exp tamanio, Tipo tipo) {
+		public Tipo_array(StringLocalizado tamanio, Tipo tipo) {
 			_tamanio = tamanio; _tipo = tipo;
 		}
 		
-		public Exp tamanio() {
+		public StringLocalizado tamanio() {
 			return _tamanio;
 		}
 		
@@ -471,7 +437,7 @@ public class TinyASint {
 	}
 	
 	public static class Campos_uno extends Campos {
-		public Campo _campo;
+		private Campo _campo;
 		
 		public Campos_uno(Campo campo) {
 			_campo = campo;
@@ -488,8 +454,8 @@ public class TinyASint {
 	}
 	
 	public static class Campos_muchos extends Campos {
-		public Campos _campos;
-		public Campo _campo;
+		private Campos _campos;
+		private Campo _campo;
 		
 		public Campos_muchos(Campos campos, Campo campo) {
 			_campos = campos; _campo = campo;
@@ -510,7 +476,7 @@ public class TinyASint {
 	}
 	
 	public static class Insts_una extends Insts {
-		public Inst _inst;
+		private Inst _inst;
 		
 		public Insts_una(Inst inst) {
 			_inst = inst;
@@ -1330,7 +1296,7 @@ public class TinyASint {
 		return new Param_f_noref(tipo, string);
 	}
 	
-	public Tipo tipo_array(Exp exp, Tipo tipo) {
+	public Tipo tipo_array(StringLocalizado exp, Tipo tipo) {
 		return new Tipo_array(exp, tipo);
 	}
 	
@@ -1543,7 +1509,7 @@ public class TinyASint {
 	}
 	
 	public Exp indexacion(Exp exp1, Exp exp2) {
-		return indexacion(exp1, exp2);
+		return new Indexacion(exp1, exp2);
 	}
 	
 	public Exp acc_registro(Exp exp1, StringLocalizado string) {
@@ -1552,5 +1518,9 @@ public class TinyASint {
 	
 	public Exp indireccion(Exp exp) {
 		return new Indireccion(exp);
+	}
+	
+	public StringLocalizado str(String s, int fila, int col) {
+		return new StringLocalizado(s,fila,col);
 	}
 }

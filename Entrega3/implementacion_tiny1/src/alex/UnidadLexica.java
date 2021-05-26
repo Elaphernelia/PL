@@ -7,7 +7,7 @@ public abstract class UnidadLexica extends Symbol {
 	private int columna;
 
 	public UnidadLexica(int fila, int columna, int clase, String lexema) {
-		super(clase, lexema);
+		super(clase, new StringLocalizado(lexema, fila, columna));
 		this.fila = fila;
 		this.columna = columna;
 	}
@@ -16,8 +16,8 @@ public abstract class UnidadLexica extends Symbol {
 		return sym;
 	}
 
-	public String lexema() {
-		return (String) value;
+	public StringLocalizado lexema() {
+		return (StringLocalizado) value;
 	}
 
 	public int fila() {

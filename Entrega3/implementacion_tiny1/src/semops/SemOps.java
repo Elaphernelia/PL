@@ -1,5 +1,6 @@
 package semops;
 
+import alex.StringLocalizado;
 import asint.TinyASint;
 
 public class SemOps extends TinyASint {
