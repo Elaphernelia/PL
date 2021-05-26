@@ -209,7 +209,7 @@ OpIn1AsocI   ::= OR
 	{: RESULT = "or"; :};
 OpIn2AsocI   ::= MENOR 
 	{: RESULT = "<"; :};
-OpIn2AsocI   ::=  MAYOR
+OpIn2AsocI   ::= MAYOR
 	{: RESULT = ">"; :};
 OpIn2AsocI   ::= MENIG
 	{: RESULT = "<="; :};
@@ -226,15 +226,15 @@ OpIn3NoAsoc  ::= DIV
 OpIn3NoAsoc  ::= MODULO
 	{: RESULT = "%"; :};
 OpPre4NoAsoc ::= MENOS 
-	{: RESULT = "+"; :};
+	{: RESULT = "-"; :};
 OpPre4Asoc   ::= NOT 
 	{: RESULT = "not"; :};
 OpPos5Asoc   ::= SQAP E0:e SQCIER 
 	{: RESULT = new OpInfo("index", e, null); :};
 OpPos5Asoc   ::= PUNTO IDENTIFICADOR:id 
-	{: RESULT = new OpInfo("reg", null, id); :};
+	{: RESULT = new OpInfo("reg", null, id); :}; // acc_reg
 OpPos5Asoc   ::= FLECHA IDENTIFICADOR:id
-	{: RESULT = new OpInfo("reg", null, id); :};
+	{: RESULT = new OpInfo("regin", null, id); :};
 OpPre6Asoc   ::= POR 
 	{: RESULT = "*"; :};
 

@@ -41,6 +41,7 @@ public class SemOps extends TinyASint {
 		switch (op) {
 			case "index": return indexacion(arg1, arg_a);
 			case "reg": return acc_registro(arg1, arg_v);
+			case "regin": return acc_registro_indirecto(arg1, arg_v);
 		}
 		
 		throw new UnsupportedOperationException("exp "+op);

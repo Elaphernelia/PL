@@ -50,8 +50,8 @@ public class TinyASint {
 	}
 	
 	public static class Campo {
-		Tipo _tipo;
-		StringLocalizado _identificador;
+		private Tipo _tipo;
+		private StringLocalizado _identificador;
 		
 		public Campo(Tipo tipo, StringLocalizado identificador) {
 			_tipo = tipo; _identificador = identificador;
@@ -493,8 +493,8 @@ public class TinyASint {
 	}
 	
 	public static class Insts_muchas extends Insts {
-		public Insts _insts;
-		public Inst _inst;
+		private Insts _insts;
+		private Inst _inst;
 		
 		public Insts_muchas(Insts insts, Inst inst) {
 			_insts = insts; _inst = inst;
@@ -504,7 +504,7 @@ public class TinyASint {
 			return _insts;
 		}
 		
-		public Inst isnt() {
+		public Inst inst() {
 			return _inst;
 		}
 		
@@ -515,8 +515,8 @@ public class TinyASint {
 	}
 	
 	public static class E_igual extends Inst {
-		public Exp _var;
-		public Exp _val;
+		private Exp _var;
+		private Exp _val;
 		
 		public E_igual(Exp var, Exp val) {
 			_var = var; _val = val;
@@ -537,8 +537,8 @@ public class TinyASint {
 	}
 	
 	public static class If extends Inst {
-		public Exp _condicion;
-		public PInst _pinst;
+		private Exp _condicion;
+		private PInst _pinst;
 		
 		public If(Exp condicion, PInst pinst) {
 			_condicion = condicion; _pinst = pinst;
@@ -559,9 +559,9 @@ public class TinyASint {
 	}
 	
 	public static class Ifelse extends Inst {
-		public Exp _condicion;
-		public PInst _pinst;
-		public PInst _pinstelse;
+		private Exp _condicion;
+		private PInst _pinst;
+		private PInst _pinstelse;
 		
 		public Ifelse(Exp condicion, PInst pinst, PInst pinstelse) {
 			_condicion = condicion; _pinst = pinst; _pinstelse = pinstelse;
@@ -586,8 +586,8 @@ public class TinyASint {
 	}
 	
 	public static class While extends Inst {
-		public Exp _condicion;
-		public PInst _pinst;
+		private Exp _condicion;
+		private PInst _pinst;
 		
 		public While(Exp condicion, PInst pinst) {
 			_condicion = condicion; _pinst = pinst;
@@ -608,7 +608,7 @@ public class TinyASint {
 	}
 	
 	public static class Read extends Inst {
-		public Exp _exp;
+		private Exp _exp;
 		
 		public Read(Exp exp) {
 			_exp = exp;
@@ -625,7 +625,7 @@ public class TinyASint {
 	}
 	
 	public static class Write extends Inst {
-		public Exp _exp;
+		private Exp _exp;
 		
 		public Write(Exp exp) {
 			_exp = exp;
@@ -649,7 +649,7 @@ public class TinyASint {
 	}
 	
 	public static class New extends Inst {
-		public Exp _exp;
+		private Exp _exp;
 		
 		public New(Exp exp) {
 			_exp = exp;
@@ -666,7 +666,7 @@ public class TinyASint {
 	}
 	
 	public static class Delete extends Inst {
-		public Exp _exp;
+		private Exp _exp;
 		
 		public Delete(Exp exp) {
 			_exp = exp;
@@ -683,8 +683,8 @@ public class TinyASint {
 	}
 	
 	public static class Call extends Inst {
-		public StringLocalizado _procName;
-		public PR _pr;
+		private StringLocalizado _procName;
+		private PR _pr;
 		
 		public Call(StringLocalizado procName, PR pr) {
 			_procName = procName; _pr = pr;
@@ -705,7 +705,7 @@ public class TinyASint {
 	}
 	
 	public static class Bl extends Inst {
-		public Bloque _bloque;
+		private Bloque _bloque;
 		
 		public Bl(Bloque bloque) {
 			_bloque = bloque;
@@ -753,7 +753,7 @@ public class TinyASint {
 	}
 	
 	public static class Param_r_con_una extends PR {
-		Exp _param;
+		private Exp _param;
 		
 		public Param_r_con_una(Exp param) {
 			_param = param;
@@ -770,8 +770,8 @@ public class TinyASint {
 	}
 	
 	public static class Param_r_con_muchas extends PR {
-		PR _pr;
-		Exp _param;
+		private PR _pr;
+		private Exp _param;
 		
 		public Param_r_con_muchas(PR pr, Exp param) {
 			_pr = pr; _param = param;
@@ -799,7 +799,7 @@ public class TinyASint {
 	}
 	
 	public static class Bloque_con extends Bloque {
-		Prog _prog;
+		private Prog _prog;
 		
 		public Bloque_con(Prog prog) {
 			_prog = prog;
@@ -816,7 +816,7 @@ public class TinyASint {
 	}
 	
 	public static abstract class ExpLit extends Exp {
-		StringLocalizado _val;
+		private StringLocalizado _val;
 		
 		public ExpLit(StringLocalizado val) {
 			_val = val;
@@ -1203,10 +1203,37 @@ public class TinyASint {
 	}
 	
 	public static class Acc_registro extends Exp {
-		Exp _registro;
-		StringLocalizado _campo;
+		private Exp _registro;
+		private StringLocalizado _campo;
 		
 		public Acc_registro(Exp registro, StringLocalizado campo) {
+			_registro = registro; _campo = campo;
+		}
+		
+		public Exp registro() {
+			return _registro;
+		}
+		
+		public StringLocalizado campo() {
+			return _campo;
+		}
+		
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+		
+		@Override
+		public int prioridad() {
+			return 5;
+		}
+	}
+	
+	public static class Acc_registro_indirecto extends Exp {
+		private Exp _registro;
+		private StringLocalizado _campo;
+		
+		public Acc_registro_indirecto(Exp registro, StringLocalizado campo) {
 			_registro = registro; _campo = campo;
 		}
 		
@@ -1449,7 +1476,7 @@ public class TinyASint {
 	}
 	
 	public Exp suma(Exp exp1, Exp exp2) {
-		return new Menor(exp1, exp2);
+		return new Suma(exp1, exp2);
 	}
 	
 	public Exp resta(Exp exp1, Exp exp2) {
@@ -1514,6 +1541,10 @@ public class TinyASint {
 	
 	public Exp acc_registro(Exp exp1, StringLocalizado string) {
 		return new Acc_registro(exp1, string);
+	}
+	
+	public Exp acc_registro_indirecto(Exp exp1, StringLocalizado string) {
+		return new Acc_registro_indirecto(exp1, string);
 	}
 	
 	public Exp indireccion(Exp exp) {

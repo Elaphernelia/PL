@@ -109,11 +109,18 @@ proc escribe_nombres(tArbol arbol) {
 		write arbol->nombre; nl;
 		call escribe_nombres(arbol->der)
 	endif
-} # Fin de procedimiento escribe_nombres
+}; # Fin de procedimiento escribe_nombres
+proc pruebas(tArbol t1, tArbol& t2) {
+}
 &&
 # Programa principal
 call lee_nombres(nombres);
 call construye_arbol();
+call pruebas(t1,t1);
+pi = 3.141592;
+coso = *(puntero + 5);
+coso2 = (puntero + 0)->campo;
+coso3 = ((r->a) + 2)[x + 3];
 write "Listado de nombres ordenado"; nl;
 write "---------------------------"; nl;
 call escribe_nombres(arbol)

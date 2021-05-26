@@ -71,5 +71,6 @@ public interface Procesamiento {
 	void procesa(Not not);
 	void procesa(Indexacion indexacion);
 	void procesa(Acc_registro acc_registro);
+	void procesa(Acc_registro_indirecto acc_registro_in);
 	void procesa(Indireccion indireccion);
 }
