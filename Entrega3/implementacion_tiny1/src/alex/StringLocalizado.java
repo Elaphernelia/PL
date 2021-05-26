@@ -1,5 +1,7 @@
 package alex;
 
+import asint.desc.Token;
+
 public class StringLocalizado {
 	private String _s;
 	private int _fila;
@@ -11,6 +13,10 @@ public class StringLocalizado {
 		_col = col;
 	}
 	
+	public StringLocalizado(Token id) {
+		this(id.toString(), id.beginLine, id.beginColumn);
+	}
+
 	public int fila() {
 		return _fila;
 	}

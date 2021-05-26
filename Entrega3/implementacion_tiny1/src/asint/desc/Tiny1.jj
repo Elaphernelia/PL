@@ -4,7 +4,14 @@ options  {
 PARSER_BEGIN(AnalizadorSintacticoTinyUno)
 package asint.desc;
 
-public class AnalizadorSintacticoTinyUno {}
+import alex.StringLocalizado;
+import asint.OpInfo;
+import asint.TinyASint.*;
+import semops.SemOps;
+
+public class AnalizadorSintacticoTinyUno {
+  private SemOps sem = new SemOps();
+}
 PARSER_END(AnalizadorSintacticoTinyUno)
   TOKEN:{<#letra:["a"-"z","A"-"Z"]>}
   TOKEN:{<#digito:["0"-"9"]>}
@@ -50,55 +57,211 @@ PARSER_END(AnalizadorSintacticoTinyUno)
   TOKEN:{<LitReal:<real>>}
   TOKEN:{<LitCad:"\"" (~["\n","\b","\r","\""])* "\"">}
   
-  void Sp()          : {} { Programa() <EOF> }
-  void Programa()    : {} { Decs() Insts()}
-  void Decs()        : {} { LDecs() "&&" | {} }
-  void LDecs()       : {} { Dec() RLDecs() }
-  void RLDecs()      : {} { ";" Dec() RLDecs() | {} }
-  void Dec()         : {} {<Var> TypN() <Identificador> |<Type> TypN() <Identificador>|<Proc> <Identificador> ParamsF() Bloq()}
-  void ParamsF()     : {} { "(" LParamFOpc() ")"}
-  void LParamFOpc()  : {} { LParamF() | {} }
-  void LParamF()     : {} { ParamF() RLParamF() }
-  void RLParamF()    : {} { "," ParamF() RLParamF() | {} } 
-  void ParamF()      : {} { TypN() RParamF() }
-  void RParamF()     : {} { <Identificador> | "&" <Identificador>}
-  void TypN()        : {} { BaseType() | <Array> "[" <LitEnt> "]" <Of> BaseType() | <Record> "{" LCampos() "}"| <Pointer> BaseType() }
-  void LCampos()     : {} { Campo() RLCampos() }
-  void RLCampos()    : {} { ";" Campo() RLCampos() | {} }
-  void Campo()       : {} { TypN() <Identificador> }
-  void BaseType()    : {} { BasicType() | <Identificador> }
-  void BasicType()   : {} { <Int> | <Realw> | <Bool> | <String> }
-  void Insts()       : {} { Inst() RInsts() }
-  void RInsts()      : {} { ";" Inst() RInsts() | {} }
-  void Inst()        : {} { E0() "=" E0() | <If> E0() <Then> LInsts() RInst() | <While> E0() <Do> LInsts() <Endwhile> | <Read> E0() | <Write> E0() | <Nl> | <New> E0() | <Delete> E0() | <Call> <Identificador> ParamsR() | Bloq() }
-  void RInst()       : {} { <Endif> | <Else> LInsts() <Endif>}
-  void LInsts()      : {} { Insts() | {} }
-  void ParamsR()     : {} { "(" LParamROpc() ")"}
-  void LParamROpc()  : {} { LParamR() | {} }
-  void LParamR()     : {} { E0() RLParamR()}
-  void RLParamR()    : {} { "," E0() RLParamR()| {} }
-  void Bloq()        : {} { "{" BloqOpc() "}"}
-  void BloqOpc()     : {} { Programa() | {} }
-  void E0()          : {} { E1() RE0() }
-  void RE0()         : {} { OpIn0AsocD() E0() | OpIn0NoAsoc() E1() | {} }
-  void E1()          : {} { E2() RE1() }
-  void RE1()         : {} { OpIn1AsocI() E2() RE1()| {}}
-  void E2()          : {} { E3() RE2() }
-  void RE2()         : {} { OpIn2AsocI() E3() RE2()| {}}
-  void E3()          : {} { E4() RE3()}
-  void RE3()         : {} { OpIn3NoAsoc() E4() | {}}
-  void E4()          : {} { OpPre4Asoc() E4() | OpPre4NoAsoc() E5() | E5()}
-  void E5()          : {} { E6() RE5()}
-  void RE5()         : {} { OpPos5Asoc() RE5() | {}}
-  void E6()          : {} { OpPre6Asoc() E6() | E7()}
-  void E7()          : {} { "(" E0() ")"| <LitEnt> | <LitReal> | <LitCad> | <True> | <False> | <Identificador> | <Null> }
-  void OpIn0AsocD()  : {} { "+"}
-  void OpIn0NoAsoc() : {} { "-"}
-  void OpIn1AsocI()  : {} { <And> | <Or>}
-  void OpIn2AsocI()  : {} { "<" | "<=" | ">" | ">=" | "==" | "!=" }
-  void OpIn3NoAsoc() : {} { "*" | "/" | "%"}
-  void OpPre4NoAsoc(): {} { "-"}
-  void OpPre4Asoc()  : {} { <Not>}
-  void OpPos5Asoc()  : {} { "[" E0() "]" | "." <Identificador> | "->" <Identificador>}
-  void OpPre6Asoc()  : {} { "*"}
+  Prog Sp()          : {Prog p;}
+  	{ p=Programa() <EOF> { return p; }
+  	}
+  Prog Programa()    : {Decs ds; Insts i;}
+  	{ds=Decs() i=Insts() { return sem.prog(ds,i); }
+  	}
+  Decs Decs()        : {Decs ds;}
+  	{ ds=LDecs() "&&" { return ds; }
+  	| { return null; }
+  	}
+  Decs LDecs() : {Dec d;Decs ds;}
+  	{ d=Dec() ds=RLDecs(sem.decs_una(d)) { return ds; } }
+  Decs RLDecs(Decs decsh) : {Dec d;Decs ds;}
+  	{ ";" d=Dec() ds=RLDecs(sem.decs_muchas(decsh,d)) { return ds; }
+  	| { return decsh; }
+  	}
+  Dec Dec() : {Token id; Tipo t; PFs pfs; Bloque bloq; }
+    {<Var> t=TypN() id=<Identificador> { return sem.var(t,new StringLocalizado(id)); }
+  	|<Type> t=TypN() id=<Identificador> { return sem.type(t,new StringLocalizado(id)); }
+  	|<Proc> id=<Identificador> pfs=ParamsF() bloq=Bloq() { return sem.proc(new StringLocalizado(id),pfs,bloq); }
+  	}
+  PFs ParamsF() : { PFs pfs; }
+  	{ "(" pfs=LParamFOpc() ")" { return pfs; }
+  	}
+  PFs LParamFOpc() : { PFs pfs; }
+  	{ pfs=LParamF() { return pfs; }
+  	| { return sem.param_f_sin(); }
+  	}
+  PFs LParamF() : { PFs pfs; PF pf; }
+    { pf=ParamF() pfs=RLParamF(sem.param_f_con_una(pf)) { return pfs; } }
+  PFs RLParamF(PFs pfsh) : { PFs pfs; PF pf;}
+  	{ "," pf=ParamF() pfs=RLParamF(sem.param_f_con_muchas(pfsh,pf)) { return pfs; }
+  	| { return pfsh; }
+  	} 
+  PF ParamF() : {Tipo typn;PF pf;}
+  	{ typn=TypN() pf=RParamF(typn) { return pf; }
+  	}
+  PF RParamF(Tipo typn) : {Token t;}
+  	{ t=<Identificador> { return sem.param_f_noref(typn, new StringLocalizado(t)); }
+  	| "&" t=<Identificador> { return sem.param_f_ref(typn, new StringLocalizado(t)); }
+ 	}
+  Tipo TypN() : {Token t;Campos c;Tipo b;}
+    { b=BaseType() { return b; }
+    | <Array> "[" t=<LitEnt> "]" <Of> b=BaseType() { return sem.tipo_array(new StringLocalizado(t),b); }
+    | <Record> "{" c=LCampos() "}" { return sem.tipo_record(c); }
+    | <Pointer> b=BaseType() { return sem.tipo_pointer(b); }
+    }
+  Campos LCampos() : {Campo c; Campos cs;}
+  	{ c=Campo() cs=RLCampos(sem.campos_uno(c)) { return cs; }
+  	}
+  Campos RLCampos(Campos csh) : {Campo c; Campos cs;}
+  	{ ";" c=Campo() cs=RLCampos(sem.campos_muchos(csh,c)) { return cs; }
+  	| { return csh; }
+  	}
+  Campo Campo() : {Token t;Tipo typn;}
+  	{ typn=TypN() t=<Identificador> { return sem.campo(typn,new StringLocalizado(t)); }
+  	}
+  Tipo BaseType()    : {Tipo tipo;Token t;}
+  	{ tipo=BasicType() { return tipo; }
+  	| t=<Identificador> { return sem.tipo_iden(new StringLocalizado(t)); }
+  	}
+  Tipo BasicType()   : {}
+  	{ <Int> { return sem.tipo_int(); }
+  	| <Realw> { return sem.tipo_real(); }
+  	| <Bool> { return sem.tipo_bool(); }
+  	| <String> { return sem.tipo_string(); }
+  	}
+  Insts Insts()       : {Inst i;Insts is;}
+  	{ i=Inst() is=RInsts(sem.insts_una(i)) { return is; }
+  	}
+  Insts RInsts(Insts ish) : {Inst i;Insts is;}
+  	{ ";" i=Inst() is=RInsts(sem.insts_muchas(ish,i)) { return is; }
+  	| { return ish; }
+  	}
+  Inst Inst()        : {Exp e1,e2;PInst p;Inst i;Token id;PR pr;Bloque bl;}
+  	{ e1=E0() "=" e2=E0() { return sem.e_igual(e1,e2); }
+  	| <If> e1=E0() <Then> p=LInsts() i=RInst(e1,p) { return i; }
+  	| <While> e1=E0() <Do> p=LInsts() <Endwhile> { return sem.while_(e1,p); }
+  	| <Read> e1=E0() { return sem.read(e1); }
+  	| <Write> e1=E0() { return sem.write(e1); }
+  	| <Nl> { return sem.nl(); }
+  	| <New> e1=E0() { return sem.new_(e1); }
+  	| <Delete> e1=E0() { return sem.delete(e1); }
+  	| <Call> id=<Identificador> pr=ParamsR() { return sem.call(new StringLocalizado(id),pr); }
+  	| bl=Bloq() { return sem.bl(bl); } 
+  	}
+  Inst RInst(Exp eh,PInst ph) : {PInst p;}
+  	{ <Endif> { return sem.if_(eh,ph); }
+  	| <Else> p=LInsts() <Endif> { return sem.ifelse(eh,ph,p); }
+  	}
+  PInst LInsts() : {Insts is;}
+  	{ is=Insts() { return sem.lista_con(is); }
+  	| { return sem.lista_sin(); }
+  	}
+  PR ParamsR() : {PR pr;}
+  	{ "(" pr=LParamROpc() ")" { return pr; }
+  	}
+  PR LParamROpc() : {PR pr;}
+  	{ pr = LParamR() { return pr; }
+  	| { return sem.param_r_sin(); }
+  	}
+  PR LParamR() : {Exp e;PR pr;}
+    { e=E0() pr=RLParamR(sem.param_r_con_una(e)) { return pr; }
+    }
+  PR RLParamR(PR prh) : {Exp e;PR pr;}
+  	{ "," e=E0() pr=RLParamR(sem.param_r_con_muchas(prh,e)) { return pr; } 
+  	| { return prh; }
+  	}
+  Bloque Bloq()      : {Bloque b;}
+  	{ "{" b=BloqOpc() "}" { return b; }
+  	}
+  Bloque BloqOpc()   : {Prog p;}
+  	{ p=Programa() { return sem.bloque_con(p); }
+  	| { return sem.bloque_sin(); }
+  	}
+  Exp E0()           : {Exp e1, re0;}
+  	{ e1=E1() re0=RE0(e1) { return re0; }
+  	}
+  Exp RE0(Exp exph)  : {String op;Exp e;}
+  	{ op=OpIn0AsocD() e=E0() { return sem.opera_dos(op,exph,e); }
+  	| op=OpIn0NoAsoc() e=E1() { return sem.opera_dos(op,exph,e); }
+  	| { return exph; }
+  	}
+  Exp E1()           : {Exp e2, re1;}
+  	{ e2=E2() re1=RE1(e2) { return re1; }
+  	}
+  Exp RE1(Exp exph)  : {String op; Exp e2, exp; }
+  	{ op=OpIn1AsocI() e2=E2() exp=RE1(sem.opera_dos(op,exph,e2)) { return exp; }
+  	| { return exph; }
+  	}
+  Exp E2()           : {Exp e3, re2;}
+  	{ e3=E3() re2=RE2(e3) { return re2; }
+  	}
+  Exp RE2(Exp exph)  : {String op; Exp e3, re2; }
+  	{ op=OpIn2AsocI() e3=E3() re2=RE2(sem.opera_dos(op,exph,e3)) { return re2; }
+  	| { return exph; }
+  	}
+  Exp E3()           : {Exp e4, re3;}
+  	{ e4=E4() re3=RE3(e4) { return re3; }
+  	}
+  Exp RE3(Exp exph)  : {String op; Exp e4;}
+  	{ op=OpIn3NoAsoc() e4=E4() { return sem.opera_dos(op,exph,e4); }
+  	| { return exph; }
+  	}
+  Exp E4()           : {String op;Exp e;}
+  	{ op=OpPre4Asoc() e=E4() { return sem.opera_uno(op,e); }
+  	| op=OpPre4NoAsoc() e=E5() { return sem.opera_uno(op,e); }
+  	| e=E5() { return e; }
+  	}
+  Exp E5()           : {Exp e, re;}
+  	{ e=E6() re=RE5(e) { return re; }
+  	}
+  Exp RE5(Exp exph)  : {OpInfo opinfo;Exp re;}
+  	{ opinfo=OpPos5Asoc() re=RE5(sem.opera_opposcincoasoc(opinfo.op,opinfo.a,opinfo.var,exph)) { return re; }
+  	| { return exph; }
+  	}
+  Exp E6()           : {String op;Exp e;}
+  	{ op=OpPre6Asoc() e=E6() { return sem.opera_uno(op,e); }
+  	| e=E7() { return e; }
+  	}
+  Exp E7()           : {Exp e;Token t;}
+  	{ "(" e=E0() ")" { return e;}
+  	| t=<LitEnt> { return sem.entero(new StringLocalizado(t)); }
+  	| t=<LitReal> { return sem.real(new StringLocalizado(t)); }
+  	| t=<LitCad> { return sem.cadena(new StringLocalizado(t)); }
+  	| <True> { return sem.verdadero(); }
+  	| <False> { return sem.falso(); }
+  	| t=<Identificador> { return sem.identificador(new StringLocalizado(t)); }
+  	| <Null> { return sem.null_(); }
+  	}
+  String OpIn0AsocD()  : {}
+  	{ "+" { return "+"; }
+  	}
+  String OpIn0NoAsoc() : {}
+  	{ "-" { return "-"; }
+  	}
+  String OpIn1AsocI()  : {}
+  	{ <And> { return "and"; }
+  	| <Or> { return "or"; }
+  	}
+  String OpIn2AsocI()  : {}
+  	{ "<" { return "<"; }
+  	| "<=" { return "<="; }
+  	| ">" { return ">"; }
+  	| ">=" { return ">="; }
+  	| "==" { return "=="; }
+  	| "!=" { return "!="; }
+  	}
+  String OpIn3NoAsoc() : {}
+  	{ "*" { return "*"; }
+  	| "/" { return "/"; }
+  	| "%" { return "%"; }
+  	}
+  String OpPre4NoAsoc(): {}
+  	{ "-" { return "-"; }
+  	}
+  String OpPre4Asoc()  : {}
+  	{ <Not> { return "not"; }
+ 	}
+  OpInfo OpPos5Asoc()  : {Exp e;Token id;}
+  	{ "[" e=E0() "]" { return new OpInfo("index",e,null); }
+  	| "." id=<Identificador> { return new OpInfo("reg",null,new StringLocalizado(id)); }
+  	| "->" id=<Identificador> { return new OpInfo("regin",null,new StringLocalizado(id)); }
+  	}
+  String OpPre6Asoc()  : {}
+  	{ "*" { return "*"; }
+  	}
   

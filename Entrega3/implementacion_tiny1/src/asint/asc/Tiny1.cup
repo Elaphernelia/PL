@@ -5,6 +5,7 @@ import alex.AnalizadorLexicoTinyUno;
 import alex.UnidadLexica;
 import alex.StringLocalizado;
 import semops.SemOps;
+import asint.OpInfo;
 import asint.TinyASint.*;
 import errors.GestionErroresTinyUno;
 

@@ -48,6 +48,14 @@ public class Main {
 		Prog prog = (Prog) asint.parse().value;
 		prog.procesa(new Impresion());
 	}
+	
+	public static void astDesc(String fname) throws Exception {
+		Reader input = new InputStreamReader(new FileInputStream(fname));
+		asint.desc.AnalizadorSintacticoTinyUno asint = new asint.desc.AnalizadorSintacticoTinyUno(input);
+		
+		Prog prog = asint.Sp();
+		prog.procesa(new Impresion());
+	}
 
 	public static void main(String[] args) throws Exception {
 		if (args.length != 2) {
@@ -56,7 +64,7 @@ public class Main {
 		}
 
 		if (args[1].equalsIgnoreCase("desc")) {
-			throw new UnsupportedOperationException("AST desc not supported yet");
+			astDesc(args[0]);
 		} else if (args[1].equalsIgnoreCase("asc")) {
 			astAsc(args[0]);
 		} else if (args[1].equalsIgnoreCase("asintdesc")) {

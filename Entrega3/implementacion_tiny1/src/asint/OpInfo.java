@@ -1,9 +1,9 @@
-package asint.asc;
+package asint;
 
 import alex.StringLocalizado;
 import asint.TinyASint.Exp;
 
-class OpInfo {
+public class OpInfo {
 	public String op;
 	public Exp a;
 	public StringLocalizado var;
