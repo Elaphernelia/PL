@@ -2,7 +2,7 @@ options  {
   STATIC=false;
 }  
 PARSER_BEGIN(AnalizadorSintacticoTinyUno)
-package asint.desc;
+package ast.desc;
 
 import alex.StringLocalizado;
 import asint.OpInfo;
@@ -53,7 +53,7 @@ PARSER_END(AnalizadorSintacticoTinyUno)
   TOKEN:{<Var:"var">}
   TOKEN:{<Type:"type">}
   TOKEN:{<Identificador:<letra>(<letra>|<digito>|"_")*>}
-  TOKEN:{<LitEnt:<entero>>}
+  TOKEN:{<LitEnt:<entero>>} 
   TOKEN:{<LitReal:<real>>}
   TOKEN:{<LitCad:"\"" (~["\n","\b","\r","\""])* "\"">}
   

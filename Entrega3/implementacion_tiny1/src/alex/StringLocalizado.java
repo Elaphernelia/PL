@@ -1,6 +1,6 @@
 package alex;
 
-import asint.desc.Token;
+import ast.desc.Token;
 
 public class StringLocalizado {
 	private String _s;

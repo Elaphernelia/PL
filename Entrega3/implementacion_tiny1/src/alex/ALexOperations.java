@@ -1,6 +1,6 @@
 package alex;
 
-import asint.asc.ClaseLexica;
+import ast.asc.ClaseLexica;
 
 public class ALexOperations {
   private AnalizadorLexicoTinyUno alex;

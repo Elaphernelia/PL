@@ -1,4 +1,4 @@
-package asint.asc;
+package ast.asc;
 
 import java_cup.runtime.*;
 import alex.AnalizadorLexicoTinyUno;
@@ -16,7 +16,7 @@ action code {:
 parser code {: 
     private GestionErroresTinyUno errores;
     public void syntax_error(Symbol unidadLexica) {
-        errores.errorSintactico((UnidadLexica)unidadLexica);
+        errores.errorSintactico((UnidadLexica)unidadLexica); 
     }
 :};
 init with {: 

@@ -1,4 +1,4 @@
-package asint;
+package tiny1;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,8 +8,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 import alex.AnalizadorLexicoTinyUno;
+import asint.TinyASint;
 import asint.TinyASint.Prog;
-import asint.asc.ClaseLexica;
+import ast.asc.ClaseLexica;
 import procesamientos.Impresion;
 import alex.UnidadLexica;
 
@@ -27,14 +28,14 @@ public class Main {
 	public static void alexAsintAsc(String fname) throws Exception {
 		AnalizadorLexicoTinyUno alex = new AnalizadorLexicoTinyUno(
 				new InputStreamReader(new FileInputStream(fname)));
-		asint.asc.AnalizadorSintacticoTinyUno asint = new asint.asc.AnalizadorSintacticoTinyUno(alex);
+		ast.asc.ConstructorASTTinyUno asint = new ast.asc.ConstructorASTTinyUno(alex);
 		// asint.parse();
 		asint.debug_parse();
 		System.err.println("OK");
 	}
 	
 	public static void alexAsintDesc(String fname) throws Exception {
-		asint.desc.AnalizadorSintacticoTinyUno asint = new asint.desc.AnalizadorSintacticoTinyUno(
+		ast.desc.AnalizadorSintacticoTinyUno asint = new ast.desc.AnalizadorSintacticoTinyUno(
 				new FileReader(fname));
 		asint.Sp();
 		System.out.println("OK");
@@ -43,7 +44,7 @@ public class Main {
 	public static void astAsc(String fname) throws Exception {
 		AnalizadorLexicoTinyUno alex = new AnalizadorLexicoTinyUno(
 				new InputStreamReader(new FileInputStream(fname)));
-		asint.asc.AnalizadorSintacticoTinyUno asint = new asint.asc.AnalizadorSintacticoTinyUno(alex);
+		ast.asc.ConstructorASTTinyUno asint = new ast.asc.ConstructorASTTinyUno(alex);
 		
 		Prog prog = (Prog) asint.parse().value;
 		prog.procesa(new Impresion());
@@ -51,7 +52,7 @@ public class Main {
 	
 	public static void astDesc(String fname) throws Exception {
 		Reader input = new InputStreamReader(new FileInputStream(fname));
-		asint.desc.AnalizadorSintacticoTinyUno asint = new asint.desc.AnalizadorSintacticoTinyUno(input);
+		ast.desc.AnalizadorSintacticoTinyUno asint = new ast.desc.AnalizadorSintacticoTinyUno(input);
 		
 		Prog prog = asint.Sp();
 		prog.procesa(new Impresion());

@@ -4,7 +4,7 @@
 // Wed May 26 20:22:03 CEST 2021
 //----------------------------------------------------
 
-package asint.asc;
+package ast.asc;
 
 import java_cup.runtime.*;
 import alex.AnalizadorLexicoTinyUno;
@@ -19,16 +19,16 @@ import java_cup.runtime.ComplexSymbolFactory.Location;
 /** CUP v0.11b beta 20140220 generated parser.
   * @version Wed May 26 20:22:03 CEST 2021
   */
-public class AnalizadorSintacticoTinyUno extends java_cup.runtime.lr_parser {
+public class ConstructorASTTinyUno extends java_cup.runtime.lr_parser {
 
   /** Default constructor. */
-  public AnalizadorSintacticoTinyUno() {super();}
+  public ConstructorASTTinyUno() {super();}
 
   /** Constructor which sets the default scanner. */
-  public AnalizadorSintacticoTinyUno(java_cup.runtime.Scanner s) {super(s);}
+  public ConstructorASTTinyUno(java_cup.runtime.Scanner s) {super(s);}
 
   /** Constructor which sets the default scanner. */
-  public AnalizadorSintacticoTinyUno(java_cup.runtime.Scanner s, java_cup.runtime.SymbolFactory sf) {super(s,sf);}
+  public ConstructorASTTinyUno(java_cup.runtime.Scanner s, java_cup.runtime.SymbolFactory sf) {super(s,sf);}
 
   /** Production table. */
   protected static final short _production_table[][] = 
@@ -517,10 +517,10 @@ class CUP$AnalizadorSintacticoTinyUno$actions {
 
 	private SemOps sem = new SemOps();
 
-  private final AnalizadorSintacticoTinyUno parser;
+  private final ConstructorASTTinyUno parser;
 
   /** Constructor */
-  CUP$AnalizadorSintacticoTinyUno$actions(AnalizadorSintacticoTinyUno parser) {
+  CUP$AnalizadorSintacticoTinyUno$actions(ConstructorASTTinyUno parser) {
     this.parser = parser;
   }
 
