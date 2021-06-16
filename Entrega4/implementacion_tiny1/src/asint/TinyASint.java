@@ -4,48 +4,58 @@ import alex.StringLocalizado;
 import procesamientos.Procesamiento;
 
 public class TinyASint {
+	/***************************
+	 ** INFO PARA GEN. CODIGO **
+	 ***************************/
+	public static abstract class Genero {
+		public Genero vinculo;
+		public int dir;
+		public int tam;
+		public int nivel;
+	}
+	
 	/*************
 	 ** GENEROS **
 	 *************/
 
-	public static abstract class Prog {
+	public static abstract class Prog extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Exp {
+	public static abstract class Exp extends Genero {
 		public abstract int prioridad();
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Decs {
+	public static abstract class Decs extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Dec {
+	public static abstract class Dec extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Insts {
+	public static abstract class Insts extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Inst {
+	public static abstract class Inst extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Tipo {
+	public static abstract class Tipo extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class PFs {
+	public static abstract class PFs extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class PF {
+	public static abstract class PF extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Campos {
+	public static abstract class Campos extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
@@ -70,15 +80,15 @@ public class TinyASint {
 		}
 	}
 	
-	public static abstract class PR {
+	public static abstract class PR extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class PInst {
+	public static abstract class PInst extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Bloque {
+	public static abstract class Bloque extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	

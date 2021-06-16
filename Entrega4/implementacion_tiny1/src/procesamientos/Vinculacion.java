@@ -11,32 +11,74 @@ import alex.StringLocalizado;
 import asint.TinyASint.*;
 
 public class Vinculacion implements Procesamiento {
-	private Map<String, DecInfo> _tabla_sim_act;       // la tabla de símbolos actual
-	private Stack<Map<String, DecInfo>> _tablas_sim;   // Todas las tablas de símbolos
-	private int _bloque_actual = 0;			       // indica el nivel de anidamiento del bloque
+	TablaSimbolos _t_sim;
+	
+	public Vinculacion() {
+		_t_sim = new TablaSimbolos();
+	}
+	
+	private class TablaSimbolos {
+		private Map<String, DecInfo> _tabla_sim_act;       // la tabla de símbolos actual
+		private Stack<Map<String, DecInfo>> _tablas_sim;   // Todas las tablas de símbolos
+		private int _bloque_actual = 0;			       // indica el nivel de anidamiento del bloque
+		
+		public void put(StringLocalizado str, Genero gen) {
+			_tabla_sim_act.put(str.toString(), new DecInfo(gen, str));
+		}
+		
+		public boolean contains(String str) {
+			for (Map<String, DecInfo> ts: _tablas_sim) {
+				if (ts.containsKey(str)) return true;
+			}
+			
+			return false;
+		}
+		
+		public boolean contains(StringLocalizado str) {
+			return contains(str.toString());
+		}
+		
+		public DecInfo get(String str) {
+			for (Map<String, DecInfo> ts : _tablas_sim) {
+				if (ts.containsKey(str)) return ts.get(str);
+			}
+			
+			return null;
+		}
+		
+		public DecInfo get(StringLocalizado str) {
+			return get(str.toString());
+		}
+		
+		public TablaSimbolos() {
+			_bloque_actual = 0;
+			_tabla_sim_act = new HashMap<String,DecInfo>();
+			_tablas_sim = new Stack<Map<String, DecInfo>>();
+			_tablas_sim.push(_tabla_sim_act);
+		}
+		
+		private void anida() {
+			_bloque_actual++;
+			_tabla_sim_act = new HashMap<String,DecInfo>();
+			_tablas_sim.push(_tabla_sim_act);
+		}
+		
+		private void desanida() {
+			_bloque_actual--;
+			_tabla_sim_act = _tablas_sim.pop();
+		}
+	}
 	
 	// "struct" con la info para reportar errores mejor
 	private class DecInfo {
 		public int fila;
 		public int col;
-		public Dec dec;
+		public Genero gen;
 		
-		public DecInfo(Dec dec, StringLocalizado s) {
-			this.dec = dec;
+		public DecInfo(Genero gen, StringLocalizado s) {
+			this.gen = gen;
 			this.fila = s.fila();
 			this.col = s.col();
-		}
-		
-		public DecInfo(Var var) {
-			this(var, var.var());
-		}
-		
-		public DecInfo(Type type) {
-			this(type, type.typeName());
-		}
-		
-		public DecInfo(Proc proc) {
-			this(proc, proc.procName());
 		}
 
 		public String toString() {
@@ -44,30 +86,19 @@ public class Vinculacion implements Procesamiento {
 		}
 	}
 	
-	public Vinculacion() {
-		_bloque_actual = 0;
-		_tabla_sim_act = new HashMap<String,DecInfo>();
-		_tablas_sim = new Stack<Map<String, DecInfo>>();
-		_tablas_sim.push(_tabla_sim_act);
-	}
-	
-	private void anida() {
-		_bloque_actual++;
-		_tabla_sim_act = new HashMap<String,DecInfo>();
-		_tablas_sim.push(_tabla_sim_act);
-	}
-	
-	private void error(StringLocalizado id) {
-		DecInfo di = _tabla_sim_act.get(id);
+	private void errorDec(StringLocalizado id) {
+		DecInfo di = _t_sim.get(id.toString());
 		
 		System.out.println("Error de vinculación en " + Integer.toString(id.fila()) + ":" + Integer.toString(id.col()));
-		System.out.print("  El identificador " + id + " ya ha sido declarado previamente en:" + di);
+		System.out.println("  El identificador " + id + " ya ha sido declarado previamente en:" + di);
 	}
 	
-	private void desanida() {
-		_bloque_actual--;
-		_tabla_sim_act = _tablas_sim.pop();
+	private void errorNoDec(StringLocalizado id) {
+		System.out.println("Error de vinculación en " + Integer.toString(id.fila()) + ":" + Integer.toString(id.col()));
+		System.out.println("  El identificador " + id + " no ha sido declarado anteriormente");
 	}
+	
+	
 
 	@Override
 	public void procesa(Prog_sin_decs prog) {
@@ -98,10 +129,10 @@ public class Vinculacion implements Procesamiento {
 	public void procesa(Var var) {
 		// Construye
 		StringLocalizado id = var.var();
-		if (_tabla_sim_act.containsKey(id.toString())) {
-			error(id);
+		if (_t_sim.contains(id)) {
+			errorDec(id);
 		} else {
-			_tabla_sim_act.put(id.toString(), new DecInfo(var));
+			_t_sim.put(id, var);
 		}
 	}
 
@@ -110,10 +141,10 @@ public class Vinculacion implements Procesamiento {
 		// Construye
 		StringLocalizado id = type.typeName();
 		
-		if (_tabla_sim_act.containsKey(id.toString())) {
-			error(id);
+		if (_t_sim.contains(id)) {
+			errorDec(id);
 		} else {
-			_tabla_sim_act.put(id.toString(), new DecInfo(type));
+			_t_sim.put(id, type);
 		}
 	}
 
@@ -122,10 +153,10 @@ public class Vinculacion implements Procesamiento {
 		// Construye
 		StringLocalizado id = proc.procName();
 		
-		if (_tabla_sim_act.containsKey(id.toString())) {
-			error(id);
+		if (_t_sim.contains(id)) {
+			errorDec(id);
 		} else {
-			_tabla_sim_act.put(id.toString(), new DecInfo(proc));
+			_t_sim.put(id, proc);
 		}
 	}
 
@@ -152,17 +183,23 @@ public class Vinculacion implements Procesamiento {
 		// Construye
 		StringLocalizado id = param_f_ref.parametro();
 		
-		if (_tabla_sim_act.containsKey(id.toString())) {
-			error(id);
+		if (_t_sim.contains(id)) {
+			errorDec(id);
 		} else {
-			_tabla_sim_act.put(id.toString(), new DecInfo(param_f_ref));
+			_t_sim.put(id, param_f_ref);
 		}
 	}
 
 	@Override
 	public void procesa(Param_f_noref param_f_noref) {
-		// TODO Auto-generated method stub
-
+		// Construye
+		StringLocalizado id = param_f_noref.parametro();
+		
+		if (_t_sim.contains(id)) {
+			errorDec(id);
+		} else {
+			_t_sim.put(id, param_f_noref);
+		}
 	}
 
 	@Override
@@ -233,74 +270,85 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(Insts_una insts_una) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		insts_una.inst().procesa(this);
 	}
 
 	@Override
 	public void procesa(Insts_muchas insts_muchas) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		insts_muchas.insts().procesa(this);
+		insts_muchas.inst().procesa(this);
 	}
 
 	@Override
 	public void procesa(E_igual e_igual) {
-		// TODO Auto-generated methodtype stub
-
+		// Vincula
+		e_igual.var().procesa(this);
+		e_igual.val().procesa(this);
 	}
 
 	@Override
 	public void procesa(If if_) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		if_.condicion().procesa(this);
+		if_.pinst().procesa(this);
 	}
 
 	@Override
 	public void procesa(Ifelse ifelse) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		ifelse.condicion().procesa(this);
+		ifelse.pinst().procesa(this);
+		ifelse.pinstelse().procesa(this);
 	}
 
 	@Override
 	public void procesa(While while_) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		while_.condicion().procesa(this);
+		while_.pinst().procesa(this);
 	}
 
 	@Override
 	public void procesa(Read read) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		read.exp().procesa(this);
 	}
 
 	@Override
 	public void procesa(Write write) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		write.exp().procesa(this);
 	}
 
 	@Override
 	public void procesa(Nl nl) {
-		// TODO Auto-generated method stub
-
+		// Nothing to do
 	}
 
 	@Override
 	public void procesa(New new_) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		new_.exp().procesa(this);
 	}
 
 	@Override
 	public void procesa(Delete delete) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		delete.exp().procesa(this);
 	}
 
 	@Override
 	public void procesa(Call call) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		StringLocalizado id = call.procName();
+		
+		if (!_t_sim.contains(id)) {
+			errorNoDec(id);
+		} else {
+			call.vincula = _t_sim.get(id).gen;
+		}
 	}
 
 	@Override
