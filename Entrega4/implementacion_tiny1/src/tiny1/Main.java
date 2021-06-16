@@ -12,6 +12,7 @@ import asint.TinyASint;
 import asint.TinyASint.Prog;
 import ast.asc.ClaseLexica;
 import procesamientos.Impresion;
+import procesamientos.Vinculacion;
 import alex.UnidadLexica;
 
 public class Main {
@@ -41,7 +42,7 @@ public class Main {
 		System.out.println("OK");
 	}
 	
-	public static void astAsc(String fname) throws Exception {
+	public static void astPrintAsc(String fname) throws Exception {
 		AnalizadorLexicoTinyUno alex = new AnalizadorLexicoTinyUno(
 				new InputStreamReader(new FileInputStream(fname)));
 		ast.asc.ConstructorASTTinyUno asint = new ast.asc.ConstructorASTTinyUno(alex);
@@ -50,12 +51,42 @@ public class Main {
 		prog.procesa(new Impresion());
 	}
 	
-	public static void astDesc(String fname) throws Exception {
+	public static void astPrintDesc(String fname) throws Exception {
 		Reader input = new InputStreamReader(new FileInputStream(fname));
 		ast.desc.AnalizadorSintacticoTinyUno asint = new ast.desc.AnalizadorSintacticoTinyUno(input);
 		
 		Prog prog = asint.Sp();
 		prog.procesa(new Impresion());
+	}
+	
+	private static boolean compilaCommon(Prog prog) {
+		// Si el procesador ha construido satisfactoriamente el AST, aplicará
+		// sobre el mismo el procesamiento de vinculación.
+		Vinculacion v = new Vinculacion();
+		prog.procesa(v);
+		if (v.isDirty()) {
+			System.err.println("Hubo errores en la vinculación. Parando compilación.");
+			return false;
+		}
+		
+		System.out.println("El programa ha compilado sin errores");
+		return true;
+	}
+	
+	public static void compilaAsc(String fname) throws Exception {
+		AnalizadorLexicoTinyUno alex = new AnalizadorLexicoTinyUno(
+				new InputStreamReader(new FileInputStream(fname)));
+		ast.asc.ConstructorASTTinyUno asint = new ast.asc.ConstructorASTTinyUno(alex);
+		
+		compilaCommon((Prog) asint.parse().value);
+	}
+	
+	public static void compilaDesc(String fname) throws Exception {
+		Reader input = new InputStreamReader(new FileInputStream(fname));
+		ast.desc.AnalizadorSintacticoTinyUno asint = new ast.desc.AnalizadorSintacticoTinyUno(input);
+		
+		compilaCommon(asint.Sp());
+			
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -65,9 +96,13 @@ public class Main {
 		}
 
 		if (args[1].equalsIgnoreCase("desc")) {
-			astDesc(args[0]);
+			compilaAsc(args[0]);
 		} else if (args[1].equalsIgnoreCase("asc")) {
-			astAsc(args[0]);
+			compilaDesc(args[0]);
+		} else if (args[1].equalsIgnoreCase("printasc")) {
+			astPrintAsc(args[0]);
+		} else if (args[1].equalsIgnoreCase("printdesc")) {
+			astPrintDesc(args[0]);
 		} else if (args[1].equalsIgnoreCase("asintdesc")) {
 			alexAsintDesc(args[0]);
 		} else if (args[1].equalsIgnoreCase("asintasc")) {

@@ -12,21 +12,41 @@ import asint.TinyASint.*;
 
 public class Vinculacion implements Procesamiento {
 	TablaSimbolos _t_sim;
+	boolean _dirty = false;
 	
 	public Vinculacion() {
 		_t_sim = new TablaSimbolos();
 	}
 	
+	public boolean isDirty() {
+		return _dirty;
+	}
+	
 	private class TablaSimbolos {
 		private Map<String, DecInfo> _tabla_sim_act;       // la tabla de símbolos actual
 		private Stack<Map<String, DecInfo>> _tablas_sim;   // Todas las tablas de símbolos
-		private int _bloque_actual = 0;			       // indica el nivel de anidamiento del bloque
+		
+		public TablaSimbolos() {
+			_tabla_sim_act = new HashMap<String,DecInfo>();
+			_tablas_sim = new Stack<Map<String, DecInfo>>();
+			_tablas_sim.push(_tabla_sim_act);
+		}
+
+		private void anida() {
+			_tabla_sim_act = new HashMap<String,DecInfo>();
+			_tablas_sim.push(_tabla_sim_act);
+		}
+		
+		private void desanida() {
+			_tablas_sim.pop();
+			_tabla_sim_act = _tablas_sim.peek();
+		}
 		
 		public void put(StringLocalizado str, Genero gen) {
 			_tabla_sim_act.put(str.toString(), new DecInfo(gen, str));
 		}
 		
-		public boolean contains(String str) {
+		public boolean contieneAny(String str) {
 			for (Map<String, DecInfo> ts: _tablas_sim) {
 				if (ts.containsKey(str)) return true;
 			}
@@ -34,8 +54,16 @@ public class Vinculacion implements Procesamiento {
 			return false;
 		}
 		
-		public boolean contains(StringLocalizado str) {
-			return contains(str.toString());
+		public boolean contieneAny(StringLocalizado str) {
+			return contieneAny(str.toString());
+		}
+		
+		public boolean contieneAct(String str) {
+			return _tabla_sim_act.containsKey(str);
+		}
+		
+		public boolean contieneAct(StringLocalizado str) {
+			return contieneAct(str.toString());
 		}
 		
 		public DecInfo get(String str) {
@@ -48,24 +76,6 @@ public class Vinculacion implements Procesamiento {
 		
 		public DecInfo get(StringLocalizado str) {
 			return get(str.toString());
-		}
-		
-		public TablaSimbolos() {
-			_bloque_actual = 0;
-			_tabla_sim_act = new HashMap<String,DecInfo>();
-			_tablas_sim = new Stack<Map<String, DecInfo>>();
-			_tablas_sim.push(_tabla_sim_act);
-		}
-		
-		private void anida() {
-			_bloque_actual++;
-			_tabla_sim_act = new HashMap<String,DecInfo>();
-			_tablas_sim.push(_tabla_sim_act);
-		}
-		
-		private void desanida() {
-			_bloque_actual--;
-			_tabla_sim_act = _tablas_sim.pop();
 		}
 	}
 	
@@ -86,15 +96,18 @@ public class Vinculacion implements Procesamiento {
 		}
 	}
 	
-	private void errorDec(StringLocalizado id) {
-		DecInfo di = _t_sim.get(id.toString());
-		
+	private void errorCommon(StringLocalizado id) {
+		_dirty = true;
 		System.out.println("Error de vinculación en " + Integer.toString(id.fila()) + ":" + Integer.toString(id.col()));
-		System.out.println("  El identificador " + id + " ya ha sido declarado previamente en:" + di);
+	}
+	
+	private void errorDec(StringLocalizado id) {
+		errorCommon(id);
+		System.out.println("  El identificador " + id + " ya ha sido declarado previamente en:" + _t_sim.get(id.toString()));
 	}
 	
 	private void errorNoDec(StringLocalizado id) {
-		System.out.println("Error de vinculación en " + Integer.toString(id.fila()) + ":" + Integer.toString(id.col()));
+		errorCommon(id);
 		System.out.println("  El identificador " + id + " no ha sido declarado anteriormente");
 	}
 	
@@ -129,7 +142,7 @@ public class Vinculacion implements Procesamiento {
 	public void procesa(Var var) {
 		// Construye
 		StringLocalizado id = var.var();
-		if (_t_sim.contains(id)) {
+		if (_t_sim.contieneAct(id)) {
 			errorDec(id);
 		} else {
 			_t_sim.put(id, var);
@@ -141,7 +154,7 @@ public class Vinculacion implements Procesamiento {
 		// Construye
 		StringLocalizado id = type.typeName();
 		
-		if (_t_sim.contains(id)) {
+		if (_t_sim.contieneAct(id)) {
 			errorDec(id);
 		} else {
 			_t_sim.put(id, type);
@@ -153,10 +166,14 @@ public class Vinculacion implements Procesamiento {
 		// Construye
 		StringLocalizado id = proc.procName();
 		
-		if (_t_sim.contains(id)) {
+		if (_t_sim.contieneAct(id)) {
 			errorDec(id);
 		} else {
 			_t_sim.put(id, proc);
+			_t_sim.anida();
+			proc.pfs().procesa(this);    // Construye
+			proc.bloque().procesa(this); // Vincula
+			_t_sim.desanida();
 		}
 	}
 
@@ -183,7 +200,7 @@ public class Vinculacion implements Procesamiento {
 		// Construye
 		StringLocalizado id = param_f_ref.parametro();
 		
-		if (_t_sim.contains(id)) {
+		if (_t_sim.contieneAct(id)) {
 			errorDec(id);
 		} else {
 			_t_sim.put(id, param_f_ref);
@@ -195,7 +212,7 @@ public class Vinculacion implements Procesamiento {
 		// Construye
 		StringLocalizado id = param_f_noref.parametro();
 		
-		if (_t_sim.contains(id)) {
+		if (_t_sim.contieneAct(id)) {
 			errorDec(id);
 		} else {
 			_t_sim.put(id, param_f_noref);
@@ -204,68 +221,57 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(Tipo_array tipo_array) {
-		// TODO Auto-generated method stub
-
+		// Nada
 	}
 
 	@Override
 	public void procesa(Tipo_record tipo_record) {
-		// TODO Auto-generated method stub
-
+		// Nada
 	}
 
 	@Override
 	public void procesa(Tipo_pointer tipo_pointer) {
-		// TODO Auto-generated method stub
-
+		// Nada
 	}
 
 	@Override
 	public void procesa(Tipo_iden tipo_iden) {
-		// TODO Auto-generated method stub
-
+		// Nada
 	}
 
 	@Override
 	public void procesa(Tipo_int tipo_int) {
-		// TODO Auto-generated method stub
-
+		// Nada
 	}
 
 	@Override
 	public void procesa(Tipo_real tipo_real) {
-		// TODO Auto-generated method stub
-
+		// Nada
 	}
 
 	@Override
 	public void procesa(Tipo_bool tipo_bool) {
-		// TODO Auto-generated method stub
-
+		// Nada
 	}
 
 	@Override
 	public void procesa(Tipo_string tipo_string) {
-		// TODO Auto-generated method stub
-
+		// Nada
 	}
 
 	@Override
 	public void procesa(Campos_uno campos_uno) {
-		// TODO Auto-generated method stub
-
+		// Nada
 	}
 
 	@Override
 	public void procesa(Campos_muchos campos_muchos) {
-		// TODO Auto-generated method stub
-
+		// Nada
 	}
 
 	@Override
 	public void procesa(Campo campo) {
-		// TODO Auto-generated method stub
-
+		// Nada
 	}
 
 	@Override
@@ -344,203 +350,215 @@ public class Vinculacion implements Procesamiento {
 		// Vincula
 		StringLocalizado id = call.procName();
 		
-		if (!_t_sim.contains(id)) {
+		if (!_t_sim.contieneAny(id)) {
 			errorNoDec(id);
 		} else {
-			call.vincula = _t_sim.get(id).gen;
+			call.vinculo = _t_sim.get(id).gen;
+			call.arguments().procesa(this);
 		}
 	}
 
 	@Override
 	public void procesa(Bl bl) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		_t_sim.anida();
+		bl.bloque().procesa(this);
+		_t_sim.desanida();
 	}
 
 	@Override
 	public void procesa(Lista_sin lista_sin) {
-		// TODO Auto-generated method stub
-
+		// No hacemos nada
 	}
 
 	@Override
 	public void procesa(Lista_con lista_con) {
-		// TODO Auto-generated method stub
-
+		lista_con.insts().procesa(this);
 	}
 
 	@Override
 	public void procesa(Param_r_sin param_r_sin) {
-		// TODO Auto-generated method stub
-
+		// No hacemos nada
 	}
 
 	@Override
 	public void procesa(Param_r_con_una param_r_con_una) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		param_r_con_una.param().procesa(this);
 	}
 
 	@Override
 	public void procesa(Param_r_con_muchas param_r_con_muchas) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		param_r_con_muchas.pr().procesa(this);
+		param_r_con_muchas.param().procesa(this);
 	}
 
 	@Override
 	public void procesa(Bloque_sin bloque_sin) {
-		// TODO Auto-generated method stub
-
+		// No hacemos nada
 	}
 
 	@Override
 	public void procesa(Bloque_con bloque_con) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		bloque_con.prog().procesa(this);
 	}
 
 	@Override
 	public void procesa(Entero entero) {
-		// TODO Auto-generated method stub
-
+		// No hacemos nada
 	}
 
 	@Override
 	public void procesa(Real real) {
-		// TODO Auto-generated method stub
-
+		// No hacemos nada
 	}
 
 	@Override
 	public void procesa(Cadena cadena) {
-		// TODO Auto-generated method stub
-
+		// No hacemos nada
 	}
 
 	@Override
 	public void procesa(Verdadero verdadero) {
-		// TODO Auto-generated method stub
-
+		// No hacemos nada
 	}
 
 	@Override
 	public void procesa(Falso falso) {
-		// TODO Auto-generated method stub
-
+		// No hacemos nada
 	}
 
 	@Override
 	public void procesa(Null null_) {
-		// TODO Auto-generated method stub
-
+		// No hacemos nada
 	}
 
 	@Override
 	public void procesa(Identificador identificador) {
-		// TODO Auto-generated method stub
-
+		// Vinculacion
+		StringLocalizado id = identificador.name();
+		if (!_t_sim.contieneAny(id)) {
+			errorNoDec(id);
+		} else {
+			identificador.vinculo = _t_sim.get(id).gen;
+		}
 	}
 
 	@Override
 	public void procesa(Suma suma) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		suma.arg0().procesa(this);
+		suma.arg1().procesa(this);
 	}
 
 	@Override
 	public void procesa(Resta resta) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		resta.arg0().procesa(this);
+		resta.arg1().procesa(this);
 	}
 
 	@Override
 	public void procesa(And and) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		and.arg0().procesa(this);
+		and.arg1().procesa(this);
 	}
 
 	@Override
 	public void procesa(Or or) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		or.arg0().procesa(this);
+		or.arg1().procesa(this);
 	}
 
 	@Override
 	public void procesa(Menor menor) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		menor.arg0().procesa(this);
+		menor.arg1().procesa(this);
 	}
 
 	@Override
 	public void procesa(Men_ig men_ig) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		men_ig.arg0().procesa(this);
+		men_ig.arg1().procesa(this);
 	}
 
 	@Override
 	public void procesa(Mayor mayor) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		mayor.arg0().procesa(this);
+		mayor.arg1().procesa(this);
 	}
 
 	@Override
 	public void procesa(May_ig may_ig) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		may_ig.arg0().procesa(this);
+		may_ig.arg1().procesa(this);
 	}
 
 	@Override
 	public void procesa(Igual igual) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		igual.arg0().procesa(this);
+		igual.arg1().procesa(this);
 	}
 
 	@Override
 	public void procesa(Desigual desigual) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		desigual.arg0().procesa(this);
+		desigual.arg1().procesa(this);
 	}
 
 	@Override
 	public void procesa(Mul mul) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		mul.arg0().procesa(this);
+		mul.arg1().procesa(this);
 	}
 
 	@Override
 	public void procesa(Div div) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		div.arg0().procesa(this);
+		div.arg1().procesa(this);
 	}
 
 	@Override
 	public void procesa(Modulo modulo) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		modulo.arg0().procesa(this);
+		modulo.arg1().procesa(this);
 	}
 
 	@Override
 	public void procesa(M_unario m_unario) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		m_unario.arg().procesa(this);
 	}
 
 	@Override
 	public void procesa(Not not) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		not.arg().procesa(this);
 	}
 
 	@Override
 	public void procesa(Indexacion indexacion) {
-		// TODO Auto-generated method stub
-
+		// Vincula
+		indexacion.arg0().procesa(this);
+		indexacion.arg1().procesa(this);
 	}
 
 	@Override
 	public void procesa(Acc_registro acc_registro) {
-		// TODO Auto-generated method stub
-
+		// TODO: todo
 	}
 
 	@Override

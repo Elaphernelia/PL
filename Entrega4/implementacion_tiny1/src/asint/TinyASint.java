@@ -8,7 +8,6 @@ public class TinyASint {
 	 ** INFO PARA GEN. CODIGO **
 	 ***************************/
 	public static abstract class Genero {
-		public Genero vinculo;
 		public int dir;
 		public int tam;
 		public int nivel;
@@ -695,6 +694,7 @@ public class TinyASint {
 	public static class Call extends Inst {
 		private StringLocalizado _procName;
 		private PR _pr;
+		public Genero vinculo;
 		
 		public Call(StringLocalizado procName, PR pr) {
 			_procName = procName; _pr = pr;
@@ -913,6 +913,7 @@ public class TinyASint {
 	
 	public static class Identificador extends Exp {
 		private StringLocalizado _name;
+		public Genero vinculo;
 		
 		public Identificador(StringLocalizado name) {
 			_name = name;

@@ -111,7 +111,13 @@ proc escribe_nombres(tArbol arbol) {
 	endif
 }; # Fin de procedimiento escribe_nombres
 proc pruebas(tArbol t1, tArbol& t2) {
-}
+	var int pi
+	&&
+	t1 = t1 + t2;
+	pi = 4; # AQUI DEBERIA DAR ERROR!!!
+	arbol = 3
+};
+var int t1
 &&
 # Programa principal
 call lee_nombres(nombres);
