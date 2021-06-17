@@ -8,9 +8,7 @@ public class TinyASint {
 	 ** INFO PARA GEN. CODIGO **
 	 ***************************/
 	public static abstract class Genero {
-		public int dir;
-		public int tam;
-		public int nivel;
+		public DescTipo tipo;
 	}
 	
 	/*************

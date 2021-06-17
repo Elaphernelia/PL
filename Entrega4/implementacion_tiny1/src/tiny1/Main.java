@@ -11,6 +11,7 @@ import alex.AnalizadorLexicoTinyUno;
 import asint.TinyASint;
 import asint.TinyASint.Prog;
 import ast.asc.ClaseLexica;
+import procesamientos.ComprobacionTipos;
 import procesamientos.Impresion;
 import procesamientos.Vinculacion;
 import alex.UnidadLexica;
@@ -67,6 +68,17 @@ public class Main {
 		if (v.isDirty()) {
 			System.err.println("Hubo errores en la vinculación. Parando compilación.");
 			return false;
+		} else {
+			System.out.println("Vinculación terminada sin errores");
+		}
+		
+		ComprobacionTipos t = new ComprobacionTipos();
+		prog.procesa(t);
+		if (t.isDirty()) {
+			System.err.println("Hubo errores en la comprobación de tipos. Parando compilación");
+			return false;
+		} else {
+			System.out.println("No se han detectado errores de tipos");
 		}
 		
 		System.out.println("El programa ha compilado sin errores");

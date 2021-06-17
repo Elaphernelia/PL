@@ -11,8 +11,8 @@ import alex.StringLocalizado;
 import asint.TinyASint.*;
 
 public class Vinculacion implements Procesamiento {
-	TablaSimbolos _t_sim;
-	boolean _dirty = false;
+	private TablaSimbolos _t_sim;
+	private boolean _dirty = false;
 	
 	public Vinculacion() {
 		_t_sim = new TablaSimbolos();
