@@ -1,6 +1,8 @@
 package asint;
 
 import alex.StringLocalizado;
+import procesamientos.ComprobacionTipos.TTipo;
+import procesamientos.ComprobacionTipos.Tipo_Error;
 import procesamientos.Procesamiento;
 
 public class TinyASint {
@@ -8,7 +10,7 @@ public class TinyASint {
 	 ** INFO PARA GEN. CODIGO **
 	 ***************************/
 	public static abstract class Genero {
-		public DescTipo tipo;
+		public TTipo tipo = new Tipo_Error();
 	}
 	
 	/*************
@@ -21,6 +23,7 @@ public class TinyASint {
 	
 	public static abstract class Exp extends Genero {
 		public abstract int prioridad();
+		public boolean esDesignador() { return false; }
 		public abstract void procesa(Procesamiento p);
 	}
 	
@@ -930,6 +933,11 @@ public class TinyASint {
 		public int prioridad() {
 			return 7;
 		}
+		
+		@Override
+		public boolean esDesignador() {
+			return true;
+		}
 	}
 	
 	private static abstract class ExpBin extends Exp {
@@ -1209,6 +1217,11 @@ public class TinyASint {
 		public int prioridad() {
 			return 5;
 		}
+
+		@Override
+		public boolean esDesignador() {
+			return true;
+		}
 	}
 	
 	public static class Acc_registro extends Exp {
@@ -1235,6 +1248,11 @@ public class TinyASint {
 		@Override
 		public int prioridad() {
 			return 5;
+		}
+
+		@Override
+		public boolean esDesignador() {
+			return true;
 		}
 	}
 	
@@ -1263,6 +1281,11 @@ public class TinyASint {
 		public int prioridad() {
 			return 5;
 		}
+
+		@Override
+		public boolean esDesignador() {
+			return true;
+		}
 	}
 	
 	public static class Indireccion extends ExpUn {
@@ -1279,6 +1302,11 @@ public class TinyASint {
 		public int prioridad() {
 			return 6;
 		}		
+
+		@Override
+		public boolean esDesignador() {
+			return true;
+		}
 	}
 	
 	/*******************

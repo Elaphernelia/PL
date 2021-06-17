@@ -558,19 +558,17 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(Acc_registro acc_registro) {
-		// TODO: todo
+		acc_registro.registro().procesa(this);
 	}
 
 	@Override
 	public void procesa(Acc_registro_indirecto acc_registro_in) {
-		// TODO Auto-generated method stub
-
+		acc_registro_in.registro().procesa(this);
 	}
 
 	@Override
 	public void procesa(Indireccion indireccion) {
-		// TODO Auto-generated method stub
-
+		indireccion.arg().procesa(this);
 	}
 
 }
