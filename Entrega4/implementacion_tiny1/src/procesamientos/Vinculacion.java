@@ -9,6 +9,7 @@ import java.util.Stack;
 
 import alex.StringLocalizado;
 import asint.TinyASint.*;
+import procesamientos.ComprobacionTipos.Tipable;
 
 public class Vinculacion implements Procesamiento {
 	private TablaSimbolos _t_sim;
@@ -42,7 +43,7 @@ public class Vinculacion implements Procesamiento {
 			_tabla_sim_act = _tablas_sim.peek();
 		}
 		
-		public void put(StringLocalizado str, Genero gen) {
+		public void put(StringLocalizado str, Tipable gen) {
 			_tabla_sim_act.put(str.toString(), new DecInfo(gen, str));
 		}
 		
@@ -83,9 +84,9 @@ public class Vinculacion implements Procesamiento {
 	private class DecInfo {
 		public int fila;
 		public int col;
-		public Genero gen;
+		public Tipable gen;
 		
-		public DecInfo(Genero gen, StringLocalizado s) {
+		public DecInfo(Tipable gen, StringLocalizado s) {
 			this.gen = gen;
 			this.fila = s.fila();
 			this.col = s.col();

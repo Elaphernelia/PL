@@ -1,7 +1,10 @@
 package asint;
 
 import alex.StringLocalizado;
+import procesamientos.ComprobacionTipos.Tipable;
 import procesamientos.ComprobacionTipos.TTipo;
+import procesamientos.ComprobacionTipos.Tipo_OK;
+import procesamientos.ComprobacionTipos.Tipo_Record;
 import procesamientos.ComprobacionTipos.Tipo_Error;
 import procesamientos.Procesamiento;
 
@@ -10,18 +13,30 @@ public class TinyASint {
 	 ** INFO PARA GEN. CODIGO **
 	 ***************************/
 	public static abstract class Genero {
-		public TTipo tipo = new Tipo_Error();
+		public int dir;
+		public int nivel;
+		public int size;
 	}
 	
 	/*************
 	 ** GENEROS **
 	 *************/
 
-	public static abstract class Prog extends Genero {
+	public static abstract class Prog extends Genero implements Tipable {
+		private TTipo _t;
+		@Override
+		public TTipo getTipo() { return _t; }
+		@Override
+		public void setTipo(TTipo t) { _t = t; }
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Exp extends Genero {
+	public static abstract class Exp extends Genero implements Tipable {
+		private TTipo _t;
+		@Override
+		public TTipo getTipo() { return _t; }
+		@Override
+		public void setTipo(TTipo t) { _t = t; }
 		public abstract int prioridad();
 		public boolean esDesignador() { return false; }
 		public abstract void procesa(Procesamiento p);
@@ -31,19 +46,39 @@ public class TinyASint {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Dec extends Genero {
+	public static abstract class Dec extends Genero implements Tipable {
+		private TTipo _t;
+		@Override
+		public TTipo getTipo() { return _t; }
+		@Override
+		public void setTipo(TTipo t) { _t = t; }
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Insts extends Genero {
+	public static abstract class Insts extends Genero implements Tipable {
+		private TTipo _t;
+		@Override
+		public TTipo getTipo() { return _t; }
+		@Override
+		public void setTipo(TTipo t) { _t = t; }
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Inst extends Genero {
+	public static abstract class Inst extends Genero implements Tipable {
+		private TTipo _t;
+		@Override
+		public TTipo getTipo() { return _t; }
+		@Override
+		public void setTipo(TTipo t) { _t = t; }
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Tipo extends Genero {
+	public static abstract class Tipo extends Genero implements Tipable {
+		private TTipo _t;
+		@Override
+		public TTipo getTipo() { return _t; }
+		@Override
+		public void setTipo(TTipo t) { _t = t; }
 		public abstract void procesa(Procesamiento p);
 	}
 	
@@ -51,15 +86,28 @@ public class TinyASint {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class PF extends Genero {
+	public static abstract class PF extends Genero implements Tipable {
+		private TTipo _t;
+		@Override
+		public TTipo getTipo() { return _t; }
+		@Override
+		public void setTipo(TTipo t) { _t = t; }
 		public abstract void procesa(Procesamiento p);
 	}
 	
 	public static abstract class Campos extends Genero {
+		private Tipo_Record _t;
+		public Tipo_Record getTipo() { return _t; }
+		public void setTipo(Tipo_Record t) { _t = t; }
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static class Campo {
+	public static class Campo extends Genero implements Tipable {
+		private TTipo _t;
+		@Override
+		public TTipo getTipo() { return _t; }
+		@Override
+		public void setTipo(TTipo t) { _t = t; }
 		private Tipo _tipo;
 		private StringLocalizado _identificador;
 		
@@ -80,15 +128,30 @@ public class TinyASint {
 		}
 	}
 	
-	public static abstract class PR extends Genero {
+	public static abstract class PR extends Genero implements Tipable {
+		private TTipo _t;
+		@Override
+		public TTipo getTipo() { return _t; }
+		@Override
+		public void setTipo(TTipo t) { _t = t; }
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class PInst extends Genero {
+	public static abstract class PInst extends Genero implements Tipable {
+		private TTipo _t;
+		@Override
+		public TTipo getTipo() { return _t; }
+		@Override
+		public void setTipo(TTipo t) { _t = t; }
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Bloque extends Genero {
+	public static abstract class Bloque extends Genero implements Tipable {
+		private TTipo _t;
+		@Override
+		public TTipo getTipo() { return _t; }
+		@Override
+		public void setTipo(TTipo t) { _t = t; }
 		public abstract void procesa(Procesamiento p);
 	}
 	
@@ -227,6 +290,9 @@ public class TinyASint {
 		private PFs _pfs;
 		private Bloque _bloque;
 		
+		@Override
+		public TTipo getTipo() { return new Tipo_OK(); }
+		
 		public Proc(StringLocalizado procName, PFs pfs, Bloque bloque) {
 			_procName = procName;
 			_pfs = pfs;
@@ -364,6 +430,10 @@ public class TinyASint {
 		@Override
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
+		}
+
+		public int tamanioInt() {
+			return Integer.parseInt(_tamanio.toString());
 		}
 	}
 	
@@ -695,7 +765,7 @@ public class TinyASint {
 	public static class Call extends Inst {
 		private StringLocalizado _procName;
 		private PR _pr;
-		public Genero vinculo;
+		public Tipable vinculo;
 		
 		public Call(StringLocalizado procName, PR pr) {
 			_procName = procName; _pr = pr;
@@ -914,7 +984,7 @@ public class TinyASint {
 	
 	public static class Identificador extends Exp {
 		private StringLocalizado _name;
-		public Genero vinculo;
+		public Tipable vinculo;
 		
 		public Identificador(StringLocalizado name) {
 			_name = name;
