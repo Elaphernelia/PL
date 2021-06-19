@@ -86,7 +86,11 @@ public class Main {
 		System.out.println("Procesado etiquetado");
 		
 		// TODO: Obtener tamaños de la asignacion de espacio
-		MaquinaP p = new MaquinaP(10,10,10,3);
+		int tamdatos = prog.size;
+		int tampila = 10;
+		int tamheap = 10;
+		int ndisplays = a.getMaxNivel();
+		MaquinaP p = new MaquinaP(tamdatos,tampila,tamheap,ndisplays);
 		
 		GeneraCodigo c = new GeneraCodigo(p);
 		prog.procesa(c);

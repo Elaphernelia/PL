@@ -73,16 +73,23 @@ import asint.TinyASint.Write;
 public class AsignaEspacio implements Procesamiento {
 	private int _dir = 0;
 	private int _nivel = 0;
+	private int _maxnivel = 0;
+	
+	public int getMaxNivel() {
+		return _maxnivel;
+	}
 
 	@Override
 	public void procesa(Prog_sin_decs prog) {
 		prog.insts().procesa(this);
+		prog.size = _dir;
 	}
 
 	@Override
 	public void procesa(Prog_con_decs prog) {
 		prog.decs().procesa(this);
 		prog.insts().procesa(this);
+		prog.size = _dir;
 	}
 
 	@Override
@@ -103,7 +110,8 @@ public class AsignaEspacio implements Procesamiento {
 		
 		var.tipo().procesa(this);
 		
-		var.dir += var.size;
+		var.size = var.tipo().size;
+		_dir += var.size;
 	}
 
 	@Override
@@ -116,6 +124,7 @@ public class AsignaEspacio implements Procesamiento {
 	public void procesa(Proc proc) {
 		int dir_ant = _dir;
 		_nivel++;
+		_maxnivel = Math.max(_nivel, _maxnivel);
 		_dir = 0;
 		
 		proc.pfs().procesa(this);
@@ -188,26 +197,22 @@ public class AsignaEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(Tipo_int tipo_int) {
-		// TODO Auto-generated method stub
 		tipo_int.size = 1;
 	}
 
 	@Override
 	public void procesa(Tipo_real tipo_real) {
-		// TODO Auto-generated method stub
 		tipo_real.size = 1;
 	}
 
 	@Override
 	public void procesa(Tipo_bool tipo_bool) {
-		// TODO Auto-generated method stub
 		tipo_bool.size = 1;
 	}
 
 	@Override
 	public void procesa(Tipo_string tipo_string) {
-		// TODO Auto-generated method stub
-
+		tipo_string.size = 1;
 	}
 
 	@Override
@@ -374,103 +379,102 @@ public class AsignaEspacio implements Procesamiento {
 	@Override
 	public void procesa(Null null_) {
 		// TODO Auto-generated method stub
-
+		null_.size = 1;
 	}
 
 	@Override
 	public void procesa(Identificador identificador) {
-		// TODO Auto-generated method stub
-
+		identificador.dir = identificador.vinculo.dir;
+		identificador.size = identificador.vinculo.size;
+		identificador.nivel = identificador.vinculo.nivel;
 	}
 
 	@Override
-	public void procesa(Suma suma) {
-		// TODO Auto-generated method stub
-
+	public void procesa(Suma op) {
+		op.arg0().procesa(this);
+		op.arg1().procesa(this);
 	}
 
 	@Override
-	public void procesa(Resta resta) {
-		// TODO Auto-generated method stub
-
+	public void procesa(Resta op) {
+		op.arg0().procesa(this);
+		op.arg1().procesa(this);
 	}
 
 	@Override
-	public void procesa(And and) {
-		// TODO Auto-generated method stub
-
+	public void procesa(And op) {
+		op.arg0().procesa(this);
+		op.arg1().procesa(this);
 	}
 
 	@Override
-	public void procesa(Or or) {
-		// TODO Auto-generated method stub
-
+	public void procesa(Or op) {
+		op.arg0().procesa(this);
+		op.arg1().procesa(this);
 	}
 
 	@Override
-	public void procesa(Menor menor) {
-		// TODO Auto-generated method stub
-
+	public void procesa(Menor op) {
+		op.arg0().procesa(this);
+		op.arg1().procesa(this);
 	}
 
 	@Override
-	public void procesa(Men_ig men_ig) {
-		// TODO Auto-generated method stub
-
+	public void procesa(Men_ig op) {
+		op.arg0().procesa(this);
+		op.arg1().procesa(this);
 	}
 
 	@Override
-	public void procesa(Mayor mayor) {
-		// TODO Auto-generated method stub
-
+	public void procesa(Mayor op) {
+		op.arg0().procesa(this);
+		op.arg1().procesa(this);
 	}
 
 	@Override
-	public void procesa(May_ig may_ig) {
-		// TODO Auto-generated method stub
-
+	public void procesa(May_ig op) {
+		op.arg0().procesa(this);
+		op.arg1().procesa(this);
 	}
 
 	@Override
-	public void procesa(Igual igual) {
-		// TODO Auto-generated method stub
-
+	public void procesa(Igual op) {
+		op.arg0().procesa(this);
+		op.arg1().procesa(this);
 	}
 
 	@Override
-	public void procesa(Desigual desigual) {
-		// TODO Auto-generated method stub
-
+	public void procesa(Desigual op) {
+		op.arg0().procesa(this);
+		op.arg1().procesa(this);
 	}
 
 	@Override
-	public void procesa(Mul mul) {
-		// TODO Auto-generated method stub
-
+	public void procesa(Mul op) {
+		op.arg0().procesa(this);
+		op.arg1().procesa(this);
 	}
 
 	@Override
-	public void procesa(Div div) {
-		// TODO Auto-generated method stub
-
+	public void procesa(Div op) {
+		op.arg0().procesa(this);
+		op.arg1().procesa(this);
 	}
 
 	@Override
-	public void procesa(Modulo modulo) {
-		// TODO Auto-generated method stub
-
+	public void procesa(Modulo op) {
+		op.arg0().procesa(this);
+		op.arg1().procesa(this);
 	}
 
 	@Override
 	public void procesa(M_unario m_unario) {
-		// TODO Auto-generated method stub
-
+		m_unario.arg().procesa(this);
 	}
 
 	@Override
 	public void procesa(Not not) {
-		// TODO Auto-generated method stub
-
+		not.arg().procesa(this);
 	}
 
 	@Override

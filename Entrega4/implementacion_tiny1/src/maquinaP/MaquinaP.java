@@ -2,6 +2,7 @@ package maquinaP;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Stack;
 
 public class MaquinaP {
@@ -110,6 +111,7 @@ public class MaquinaP {
 	private Stack<Valor> pilaEvaluacion;
 	private Valor[] datos;
 	private int pc;
+	private Scanner in;
 
 	public interface Instruccion {
 		void ejecuta();
@@ -763,6 +765,45 @@ private IMenorIgNum IMENORIGNUM = new IMenorIgNum();
 			return "writestring";
 		}
 	}
+	
+	private Instruccion IREADINT = new IReadInt();
+	
+	private class IReadInt implements Instruccion {
+		public void ejecuta() {
+			pilaEvaluacion.push(new ValorInt(in.nextInt()));
+			pc++;
+		}
+		
+		public String toString() {
+			return "readint";
+		}
+	}
+	
+	private Instruccion IREADREAL = new IReadReal();
+	
+	private class IReadReal implements Instruccion {
+		public void ejecuta() {
+			pilaEvaluacion.push(new ValorReal(in.nextDouble()));
+			pc++;
+		}
+		
+		public String toString() {
+			return "readreal";
+		}
+	}
+	
+	private Instruccion IREADSTRING = new IReadString();
+	
+	private class IReadString implements Instruccion {
+		public void ejecuta() {
+			pilaEvaluacion.push(new ValorString(in.nextLine()));
+			pc++;
+		}
+		
+		public String toString() {
+			return "readstring";
+		}
+	}
 
 	public Instruccion suma() {
 		return ISUMA;
@@ -915,6 +956,18 @@ private IMenorIgNum IMENORIGNUM = new IMenorIgNum();
 	public Instruccion writeString() {
 		return IWRITESTRING;
 	}
+	
+	public Instruccion readInt() {
+		return IREADINT;
+	}
+	
+	public Instruccion readReal() {
+		return IREADREAL;
+	}
+	
+	public Instruccion readString() {
+		return IREADSTRING;
+	}
 
 	public Instruccion dup() {
 		return IDUP;
@@ -937,6 +990,7 @@ private IMenorIgNum IMENORIGNUM = new IMenorIgNum();
 		this.tamheap = tamheap;
 		this.ndisplays = ndisplays;
 		this.codigoP = new ArrayList<>();
+		this.in = new Scanner(System.in);
 		pilaEvaluacion = new Stack<>();
 		datos = new Valor[tamdatos + tampila + tamheap];
 		this.pc = 0;

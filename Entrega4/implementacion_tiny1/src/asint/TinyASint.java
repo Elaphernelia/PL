@@ -13,9 +13,9 @@ public class TinyASint {
 	 ** INFO PARA GEN. CODIGO **
 	 ***************************/
 	public static abstract class Genero {
-		public int dir;
-		public int nivel;
-		public int size;
+		public int dir = -1;
+		public int nivel = -1;
+		public int size = -1;
 	}
 	
 	/*************
@@ -937,7 +937,7 @@ public class TinyASint {
 	
 	public static class Cadena extends ExpLit {
 		public Cadena(StringLocalizado val) {
-			super(val);
+			super(new StringLocalizado(val.toString().substring(1, val.toString().length()-1), val.fila(), val.col()));
 		}
 		
 		@Override
@@ -984,7 +984,7 @@ public class TinyASint {
 	
 	public static class Identificador extends Exp {
 		private StringLocalizado _name;
-		public Tipable vinculo;
+		public Var vinculo;
 		
 		public Identificador(StringLocalizado name) {
 			_name = name;

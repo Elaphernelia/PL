@@ -443,7 +443,7 @@ public class Vinculacion implements Procesamiento {
 		if (!_t_sim.contieneAny(id)) {
 			errorNoDec(id);
 		} else {
-			identificador.vinculo = _t_sim.get(id).gen;
+			identificador.vinculo = (Var) _t_sim.get(id).gen;
 		}
 	}
 

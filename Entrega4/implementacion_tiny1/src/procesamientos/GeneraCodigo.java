@@ -191,8 +191,18 @@ public class GeneraCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Read read) {
-		// TODO Auto-generated method stub
-
+		read.exp().procesa(this);
+		if (read.exp().getTipo() instanceof Tipo_Entero) {
+			_p.ponInstruccion(_p.readInt());
+		} else if (read.exp().getTipo() instanceof Tipo_Real) {
+			_p.ponInstruccion(_p.readReal());
+		} else if (read.exp().getTipo() instanceof Tipo_String) {
+			_p.ponInstruccion(_p.readString());
+		} else {
+			throw new IllegalStateException("Hubo un error de tipos no capturado");
+		}
+		
+		_p.ponInstruccion(_p.desapilaInd());
 	}
 
 	@Override
