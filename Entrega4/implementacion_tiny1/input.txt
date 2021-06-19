@@ -1,5 +1,6 @@
 var int i1; var int i2
 &&
+i1 = 3;
 write "Introduce un entero: "; read i1;
 write "Introduce otro entero: "; read i2;
 write i1; write " + "; write i2; write " = "; write (i1 + i2); nl

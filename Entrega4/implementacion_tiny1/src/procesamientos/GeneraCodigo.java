@@ -14,12 +14,20 @@ public class GeneraCodigo implements Procesamiento {
 	@Override
 	public void procesa(Prog_sin_decs prog) {
 		prog.insts().procesa(this);
+		if (_p.ninsts() != prog.etqs) {
+			System.err.println("Warning: El numero de instrucciones no coincide con la etiqueta...");
+			System.err.printf("  ninsts: %3d, etqs: %3d%n", _p.ninsts(), prog.etqs);
+		}
 	}
 
 	@Override
 	public void procesa(Prog_con_decs prog) {
 		prog.decs().procesa(this); // Codigo de procedimientos
 		prog.insts().procesa(this);
+		if (_p.ninsts() != prog.etqs) {
+			System.err.println("Warning: El numero de instrucciones no coincide con la etiqueta...");
+			System.err.printf("  ninsts: %3d, etqs: %3d%n", _p.ninsts(), prog.etqs);
+		}
 	}
 
 	@Override
@@ -324,7 +332,7 @@ public class GeneraCodigo implements Procesamiento {
 	@Override
 	public void procesa(Null null_) {
 		// TODO Auto-generated method stub
-
+		_p.ponInstruccion(_p.apilaInt(-1));
 	}
 
 	@Override

@@ -1,87 +1,23 @@
 package procesamientos;
 
-import asint.TinyASint.Acc_registro;
-import asint.TinyASint.Acc_registro_indirecto;
-import asint.TinyASint.And;
-import asint.TinyASint.Bl;
-import asint.TinyASint.Bloque_con;
-import asint.TinyASint.Bloque_sin;
-import asint.TinyASint.Cadena;
-import asint.TinyASint.Call;
-import asint.TinyASint.Campo;
-import asint.TinyASint.Campos_muchos;
-import asint.TinyASint.Campos_uno;
-import asint.TinyASint.Decs_muchas;
-import asint.TinyASint.Decs_una;
-import asint.TinyASint.Delete;
-import asint.TinyASint.Desigual;
-import asint.TinyASint.Div;
-import asint.TinyASint.E_igual;
-import asint.TinyASint.Entero;
-import asint.TinyASint.Falso;
-import asint.TinyASint.Identificador;
-import asint.TinyASint.If;
-import asint.TinyASint.Ifelse;
-import asint.TinyASint.Igual;
-import asint.TinyASint.Indexacion;
-import asint.TinyASint.Indireccion;
-import asint.TinyASint.Insts_muchas;
-import asint.TinyASint.Insts_una;
-import asint.TinyASint.Lista_con;
-import asint.TinyASint.Lista_sin;
-import asint.TinyASint.M_unario;
-import asint.TinyASint.May_ig;
-import asint.TinyASint.Mayor;
-import asint.TinyASint.Men_ig;
-import asint.TinyASint.Menor;
-import asint.TinyASint.Modulo;
-import asint.TinyASint.Mul;
-import asint.TinyASint.New;
-import asint.TinyASint.Nl;
-import asint.TinyASint.Not;
-import asint.TinyASint.Null;
-import asint.TinyASint.Or;
-import asint.TinyASint.Param_f_con_muchas;
-import asint.TinyASint.Param_f_con_una;
-import asint.TinyASint.Param_f_noref;
-import asint.TinyASint.Param_f_ref;
-import asint.TinyASint.Param_f_sin;
-import asint.TinyASint.Param_r_con_muchas;
-import asint.TinyASint.Param_r_con_una;
-import asint.TinyASint.Param_r_sin;
-import asint.TinyASint.Proc;
-import asint.TinyASint.Prog_con_decs;
-import asint.TinyASint.Prog_sin_decs;
-import asint.TinyASint.Read;
-import asint.TinyASint.Real;
-import asint.TinyASint.Resta;
-import asint.TinyASint.Suma;
-import asint.TinyASint.Tipo_array;
-import asint.TinyASint.Tipo_bool;
-import asint.TinyASint.Tipo_iden;
-import asint.TinyASint.Tipo_int;
-import asint.TinyASint.Tipo_pointer;
-import asint.TinyASint.Tipo_real;
-import asint.TinyASint.Tipo_record;
-import asint.TinyASint.Tipo_string;
-import asint.TinyASint.Type;
-import asint.TinyASint.Var;
-import asint.TinyASint.Verdadero;
-import asint.TinyASint.While;
-import asint.TinyASint.Write;
+import asint.TinyASint.*;
+import procesamientos.ComprobacionTipos.*;
 
 public class Etiquetado implements Procesamiento {
-
+	private int _etq = 0;
+	
 	@Override
 	public void procesa(Prog_sin_decs prog) {
-		// TODO Auto-generated method stub
-
+		prog.etqi = _etq;
+		prog.insts().procesa(this);
+		prog.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Prog_con_decs prog) {
-		// TODO Auto-generated method stub
-
+		prog.etqi = _etq;
+		prog.insts().procesa(this);
+		prog.etqs = _etq;
 	}
 
 	@Override
@@ -212,20 +148,27 @@ public class Etiquetado implements Procesamiento {
 
 	@Override
 	public void procesa(Insts_una insts_una) {
-		// TODO Auto-generated method stub
-
+		insts_una.etqi = _etq;
+		insts_una.inst().procesa(this);
+		insts_una.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Insts_muchas insts_muchas) {
-		// TODO Auto-generated method stub
-
+		insts_muchas.etqi = _etq;
+		insts_muchas.insts().procesa(this);
+		insts_muchas.inst().procesa(this);
+		insts_muchas.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(E_igual e_igual) {
-		// TODO Auto-generated method stub
-
+		e_igual.etqi = _etq;
+		e_igual.var().procesa(this);
+		e_igual.val().procesa(this);
+		_etq++;
+		if (e_igual.val().esDesignador()) _etq++;
+		e_igual.etqs = _etq;
 	}
 
 	@Override
@@ -248,20 +191,26 @@ public class Etiquetado implements Procesamiento {
 
 	@Override
 	public void procesa(Read read) {
-		// TODO Auto-generated method stub
-
+		read.etqi = _etq;
+		read.exp().procesa(this);
+		_etq++; _etq++;
+		read.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Write write) {
-		// TODO Auto-generated method stub
-
+		write.etqi = _etq;
+		write.exp().procesa(this);
+		if (write.exp().esDesignador()) _etq++;
+		_etq++;
+		write.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Nl nl) {
-		// TODO Auto-generated method stub
-
+		nl.etqi = _etq;
+		_etq += 2;
+		nl.etqs = _etq;
 	}
 
 	@Override
@@ -332,134 +281,230 @@ public class Etiquetado implements Procesamiento {
 
 	@Override
 	public void procesa(Entero entero) {
-		// TODO Auto-generated method stub
-
+		entero.etqi = _etq;
+		_etq++;
+		entero.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Real real) {
-		// TODO Auto-generated method stub
-
+		real.etqi = _etq;
+		_etq++;
+		real.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Cadena cadena) {
-		// TODO Auto-generated method stub
-
+		cadena.etqi = _etq;
+		_etq++;
+		cadena.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Verdadero verdadero) {
-		// TODO Auto-generated method stub
-
+		verdadero.etqi = _etq;
+		_etq++;
+		verdadero.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Falso falso) {
-		// TODO Auto-generated method stub
-
+		falso.etqi = _etq;
+		_etq++;
+		falso.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Null null_) {
-		// TODO Auto-generated method stub
-
+		null_.etqi = _etq;
+		_etq++;
+		null_.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Identificador identificador) {
-		// TODO Auto-generated method stub
-
+		identificador.etqi = _etq;
+		if (identificador.nivel == 0) {
+			_etq++;
+		} else {
+			_etq += 3;
+		}
+		identificador.etqs = _etq;
 	}
 
 	@Override
-	public void procesa(Suma suma) {
-		// TODO Auto-generated method stub
-
+	public void procesa(Suma bop) {
+		bop.etqi = _etq;
+		bop.arg0().procesa(this);
+		if (bop.arg0().esDesignador()) _etq++;
+		bop.arg1().procesa(this);
+		if (bop.arg1().esDesignador()) _etq++;
+		
+		_etq++;
+		
+		bop.etqs = _etq;
 	}
 
 	@Override
-	public void procesa(Resta resta) {
-		// TODO Auto-generated method stub
-
+	public void procesa(Resta bop) {
+		bop.etqi = _etq;
+		bop.arg0().procesa(this);
+		if (bop.arg0().esDesignador()) _etq++;
+		bop.arg1().procesa(this);
+		if (bop.arg1().esDesignador()) _etq++;
+		
+		_etq++;
+		
+		bop.etqs = _etq;
 	}
 
 	@Override
-	public void procesa(And and) {
-		// TODO Auto-generated method stub
-
+	public void procesa(And bop) {
+		bop.etqi = _etq;
+		bop.arg0().procesa(this);
+		if (bop.arg0().esDesignador()) _etq++;
+		bop.arg1().procesa(this);
+		if (bop.arg1().esDesignador()) _etq++;
+		
+		_etq++;
+		
+		bop.etqs = _etq;
 	}
 
 	@Override
-	public void procesa(Or or) {
-		// TODO Auto-generated method stub
-
+	public void procesa(Or bop) {
+		bop.etqi = _etq;
+		bop.arg0().procesa(this);
+		if (bop.arg0().esDesignador()) _etq++;
+		bop.arg1().procesa(this);
+		if (bop.arg1().esDesignador()) _etq++;
+		
+		_etq++;
+		
+		bop.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Menor menor) {
-		// TODO Auto-generated method stub
-
+		menor.etqi = _etq;
+		menor.arg0().procesa(this);
+		if (menor.arg0().esDesignador()) _etq++;
+		if (menor.arg0().getTipo() instanceof Tipo_Bool) _etq++;
+		menor.arg1().procesa(this);
+		if (menor.arg1().esDesignador()) _etq++;
+		menor.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Men_ig men_ig) {
-		// TODO Auto-generated method stub
-
+		men_ig.etqi = _etq;
+		men_ig.arg0().procesa(this);
+		if (men_ig.arg0().esDesignador()) _etq++;
+		if (men_ig.arg0().getTipo() instanceof Tipo_Bool) _etq++;
+		men_ig.arg1().procesa(this);
+		if (men_ig.arg1().esDesignador()) _etq++;
+		men_ig.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Mayor mayor) {
-		// TODO Auto-generated method stub
-
+		mayor.etqi = _etq;
+		mayor.arg0().procesa(this);
+		if (mayor.arg0().esDesignador()) _etq++;
+		if (mayor.arg0().getTipo() instanceof Tipo_Bool) _etq++;
+		mayor.arg1().procesa(this);
+		if (mayor.arg1().esDesignador()) _etq++;
+		mayor.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(May_ig may_ig) {
-		// TODO Auto-generated method stub
-
+		may_ig.etqi = _etq;
+		may_ig.arg0().procesa(this);
+		if (may_ig.arg0().esDesignador()) _etq++;
+		if (may_ig.arg0().getTipo() instanceof Tipo_Bool) _etq++;
+		may_ig.arg1().procesa(this);
+		if (may_ig.arg1().esDesignador()) _etq++;
+		may_ig.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Igual igual) {
-		// TODO Auto-generated method stub
-
+		igual.etqi = _etq;
+		igual.arg0().procesa(this);
+		if (igual.arg0().esDesignador()) _etq++;
+		igual.arg1().procesa(this);
+		if (igual.arg1().esDesignador()) _etq++;
+		_etq++;
+		igual.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Desigual desigual) {
-		// TODO Auto-generated method stub
-
+		desigual.etqi = _etq;
+		desigual.arg0().procesa(this);
+		if (desigual.arg0().esDesignador()) _etq++;
+		desigual.arg1().procesa(this);
+		if (desigual.arg1().esDesignador()) _etq++;
+		_etq++; _etq++;
+		desigual.etqs = _etq;
 	}
 
 	@Override
-	public void procesa(Mul mul) {
-		// TODO Auto-generated method stub
-
+	public void procesa(Mul bop) {
+		bop.etqi = _etq;
+		bop.arg0().procesa(this);
+		if (bop.arg0().esDesignador()) _etq++;
+		bop.arg1().procesa(this);
+		if (bop.arg1().esDesignador()) _etq++;
+		
+		_etq++;
+		
+		bop.etqs = _etq;
 	}
 
 	@Override
-	public void procesa(Div div) {
-		// TODO Auto-generated method stub
-
+	public void procesa(Div bop) {
+		bop.etqi = _etq;
+		bop.arg0().procesa(this);
+		if (bop.arg0().esDesignador()) _etq++;
+		bop.arg1().procesa(this);
+		if (bop.arg1().esDesignador()) _etq++;
+		
+		_etq++;
+		
+		bop.etqs = _etq;
 	}
 
 	@Override
-	public void procesa(Modulo modulo) {
-		// TODO Auto-generated method stub
-
+	public void procesa(Modulo bop) {
+		bop.etqi = _etq;
+		bop.arg0().procesa(this);
+		if (bop.arg0().esDesignador()) _etq++;
+		bop.arg1().procesa(this);
+		if (bop.arg1().esDesignador()) _etq++;
+		
+		_etq++;
+		
+		bop.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(M_unario m_unario) {
-		// TODO Auto-generated method stub
-
+		m_unario.etqi = _etq;
+		_etq++;
+		m_unario.arg().procesa(this);
+		if (m_unario.arg().esDesignador()) _etq++;
+		_etq++;
+		m_unario.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Not not) {
-		// TODO Auto-generated method stub
-
+		not.etqi = _etq;
+		if (not.arg().esDesignador()) _etq++;
+		_etq++;
+		not.etqs = _etq;
 	}
 
 	@Override

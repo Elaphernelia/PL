@@ -16,6 +16,9 @@ public class TinyASint {
 		public int dir = -1;
 		public int nivel = -1;
 		public int size = -1;
+		
+		public int etqi = -1;
+		public int etqs = -1;
 	}
 	
 	/*************

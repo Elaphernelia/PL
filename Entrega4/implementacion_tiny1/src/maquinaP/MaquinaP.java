@@ -1018,6 +1018,10 @@ private IMenorIgNum IMENORIGNUM = new IMenorIgNum();
 			System.out.printf("%03d %s%n", i, codigoP.get(i));
 		}
 	}
+	
+	public int ninsts() {
+		return codigoP.size();
+	}
 
 	public void muestraEstado() {
 		System.out.println("Tam datos:" + tamdatos);
