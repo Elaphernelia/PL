@@ -1,4 +1,7 @@
-write (true == true); nl;
-write (3 == 2); nl;
-write ("Hola" == "Hola"); nl;
-write 5 % 2; nl
+var int i1; var int i2
+&&
+i1 = 3;
+write i1; nl;
+i2 = i1 + 2;
+write i2; nl;
+write (i1 + 2); nl

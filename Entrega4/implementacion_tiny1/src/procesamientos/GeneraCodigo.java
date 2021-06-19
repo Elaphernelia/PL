@@ -18,8 +18,8 @@ public class GeneraCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Prog_con_decs prog) {
-		// TODO Auto-generated method stub
-
+		prog.decs().procesa(this); // Codigo de procedimientos
+		prog.insts().procesa(this);
 	}
 
 	@Override
@@ -161,8 +161,14 @@ public class GeneraCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(E_igual e_igual) {
-		// TODO Auto-generated method stub
-
+		e_igual.var().procesa(this);
+		e_igual.val().procesa(this);
+		
+		if (e_igual.val().esDesignador()) {
+			_p.ponInstruccion(_p.mueve(e_igual.val().size));
+		} else {
+			_p.ponInstruccion(_p.desapilaInd());
+		}
 	}
 
 	@Override
@@ -191,8 +197,10 @@ public class GeneraCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Write write) {
-		// TODO Auto-generated method stub
 		write.exp().procesa(this);
+		if (write.exp().esDesignador()) {
+			_p.ponInstruccion(_p.apilaInd());
+		}
 		if (write.exp().getTipo() instanceof Tipo_Entero) {
 			_p.ponInstruccion(_p.writeInt());
 		} else if (write.exp().getTipo() instanceof Tipo_Real) {
@@ -311,14 +319,21 @@ public class GeneraCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Identificador identificador) {
-		// TODO Auto-generated method stub
-
+		if (identificador.nivel == 0) {
+			_p.ponInstruccion(_p.apilaInt(identificador.dir));
+		} else {
+			_p.ponInstruccion(_p.apilad(identificador.nivel));
+			_p.ponInstruccion(_p.apilaInt(identificador.dir));
+			_p.ponInstruccion(_p.suma());
+		}
 	}
 
 	@Override
 	public void procesa(Suma aop) {
 		aop.arg0().procesa(this);
+		if (aop.arg0().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		aop.arg1().procesa(this);
+		if (aop.arg1().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		
 		if (aop.getTipo() instanceof Tipo_Entero) {
 			_p.ponInstruccion(_p.suma());
@@ -330,7 +345,9 @@ public class GeneraCodigo implements Procesamiento {
 	@Override
 	public void procesa(Resta aop) {
 		aop.arg0().procesa(this);
+		if (aop.arg0().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		aop.arg1().procesa(this);
+		if (aop.arg1().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		
 		if (aop.getTipo() instanceof Tipo_Entero) {
 			_p.ponInstruccion(_p.resta());
@@ -342,14 +359,18 @@ public class GeneraCodigo implements Procesamiento {
 	@Override
 	public void procesa(And bop) {
 		bop.arg0().procesa(this);
+		if (bop.arg0().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		bop.arg1().procesa(this);
+		if (bop.arg1().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		_p.ponInstruccion(_p.and());
 	}
 
 	@Override
 	public void procesa(Or bop) {
 		bop.arg0().procesa(this);
+		if (bop.arg0().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		bop.arg1().procesa(this);
+		if (bop.arg1().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		_p.ponInstruccion(_p.or());
 	}
 
@@ -358,8 +379,10 @@ public class GeneraCodigo implements Procesamiento {
 		// Nota: En el caso de bool: a < b <-> !a ^ b
 		
 		rop.arg0().procesa(this);
+		if (rop.arg0().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		if (rop.arg0().getTipo() instanceof Tipo_Bool) _p.ponInstruccion(_p.not());
 		rop.arg1().procesa(this);
+		if (rop.arg1().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		
 		if (rop.arg0().getTipo().isNum()) {
 			_p.ponInstruccion(_p.menorNum());
@@ -377,8 +400,10 @@ public class GeneraCodigo implements Procesamiento {
 		// Nota: En el caso de bool: a <= b <-> !a v b
 		
 		rop.arg0().procesa(this);
+		if (rop.arg0().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		if (rop.arg0().getTipo() instanceof Tipo_Bool) _p.ponInstruccion(_p.not());
 		rop.arg1().procesa(this);
+		if (rop.arg1().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		
 		if (rop.arg0().getTipo().isNum()) {
 			_p.ponInstruccion(_p.menorIgNum());
@@ -396,8 +421,10 @@ public class GeneraCodigo implements Procesamiento {
 		// a > b <-> b < a
 	
 		rop.arg1().procesa(this);
+		if (rop.arg1().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		if (rop.arg0().getTipo() instanceof Tipo_Bool) _p.ponInstruccion(_p.not());
 		rop.arg0().procesa(this);
+		if (rop.arg0().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		
 		if (rop.arg0().getTipo().isNum()) {
 			_p.ponInstruccion(_p.menorNum());
@@ -415,8 +442,10 @@ public class GeneraCodigo implements Procesamiento {
 		// a >= b <-> b <= a
 
 		rop.arg1().procesa(this);
+		if (rop.arg1().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		if (rop.arg0().getTipo() instanceof Tipo_Bool) _p.ponInstruccion(_p.not());
 		rop.arg0().procesa(this);
+		if (rop.arg0().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		
 		if (rop.arg0().getTipo().isNum()) {
 			_p.ponInstruccion(_p.menorIgNum());
@@ -434,7 +463,9 @@ public class GeneraCodigo implements Procesamiento {
 		// Nota: Con bool, a == b <-> a ^ b
 		
 		rop.arg0().procesa(this);
+		if (rop.arg0().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		rop.arg1().procesa(this);
+		if (rop.arg1().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		
 		if (rop.arg0().getTipo().isNum()) {
 			_p.ponInstruccion(_p.igualNum());
@@ -450,7 +481,9 @@ public class GeneraCodigo implements Procesamiento {
 		// Negamos la salida de Igual
 		
 		rop.arg0().procesa(this);
+		if (rop.arg0().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		rop.arg1().procesa(this);
+		if (rop.arg1().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		
 		if (rop.arg0().getTipo().isNum()) {
 			_p.ponInstruccion(_p.igualNum());
@@ -466,7 +499,9 @@ public class GeneraCodigo implements Procesamiento {
 	@Override
 	public void procesa(Mul aop) {
 		aop.arg0().procesa(this);
+		if (aop.arg0().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		aop.arg1().procesa(this);
+		if (aop.arg1().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		
 		if (aop.getTipo() instanceof Tipo_Entero) {
 			_p.ponInstruccion(_p.mul());
@@ -478,7 +513,9 @@ public class GeneraCodigo implements Procesamiento {
 	@Override
 	public void procesa(Div aop) {
 		aop.arg0().procesa(this);
+		if (aop.arg0().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		aop.arg1().procesa(this);
+		if (aop.arg1().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		
 		if (aop.getTipo() instanceof Tipo_Entero) {
 			_p.ponInstruccion(_p.div());
@@ -490,7 +527,9 @@ public class GeneraCodigo implements Procesamiento {
 	@Override
 	public void procesa(Modulo aop) {
 		aop.arg0().procesa(this);
+		if (aop.arg0().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		aop.arg1().procesa(this);
+		if (aop.arg1().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		
 		_p.ponInstruccion(_p.modulo());
 	}
@@ -500,10 +539,12 @@ public class GeneraCodigo implements Procesamiento {
 		if (m_unario.getTipo() instanceof Tipo_Entero) {
 			_p.ponInstruccion(_p.apilaInt(0));
 			m_unario.arg().procesa(this);
+			if (m_unario.arg().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 			_p.ponInstruccion(_p.resta());
 		} else if (m_unario.getTipo() instanceof Tipo_Real) {
 			_p.ponInstruccion(_p.apilaReal(0));
 			m_unario.arg().procesa(this);
+			if (m_unario.arg().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 			_p.ponInstruccion(_p.restaReal());
 		} else {
 			throw new IllegalStateException("Hubo un error de tipos no detectado");
@@ -513,6 +554,7 @@ public class GeneraCodigo implements Procesamiento {
 	@Override
 	public void procesa(Not not) {
 		not.arg().procesa(this);
+		if (not.arg().esDesignador()) _p.ponInstruccion(_p.apilaInd());
 		_p.ponInstruccion(_p.not());
 	}
 

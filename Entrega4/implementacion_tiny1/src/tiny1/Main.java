@@ -86,7 +86,7 @@ public class Main {
 		System.out.println("Procesado etiquetado");
 		
 		// TODO: Obtener tamaños de la asignacion de espacio
-		MaquinaP p = new MaquinaP(0,0,0,0);
+		MaquinaP p = new MaquinaP(10,10,10,3);
 		
 		GeneraCodigo c = new GeneraCodigo(p);
 		prog.procesa(c);
