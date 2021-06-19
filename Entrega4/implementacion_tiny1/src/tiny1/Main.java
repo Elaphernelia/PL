@@ -1,19 +1,15 @@
 package tiny1;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
 import alex.AnalizadorLexicoTinyUno;
-import asint.TinyASint;
 import asint.TinyASint.Prog;
 import ast.asc.ClaseLexica;
-import procesamientos.ComprobacionTipos;
-import procesamientos.Impresion;
-import procesamientos.Vinculacion;
+import maquinaP.MaquinaP;
+import procesamientos.*;
 import alex.UnidadLexica;
 
 public class Main {
@@ -81,7 +77,28 @@ public class Main {
 			System.out.println("No se han detectado errores de tipos");
 		}
 		
-		System.out.println("El programa ha compilado sin errores");
+		AsignaEspacio a = new AsignaEspacio();
+		prog.procesa(a);
+		System.out.println("Procesado asignación de espacio");
+		
+		Etiquetado e = new Etiquetado();
+		prog.procesa(e);
+		System.out.println("Procesado etiquetado");
+		
+		// TODO: Obtener tamaños de la asignacion de espacio
+		MaquinaP p = new MaquinaP(0,0,0,0);
+		
+		GeneraCodigo c = new GeneraCodigo(p);
+		prog.procesa(c);
+		System.out.println("Generado código de máquina-p:");
+		p.muestraCodigo();
+		
+		System.out.println("-------------------------");
+		System.out.println("Ejecutando en máquina-p");
+		p.ejecuta();
+		System.out.println("Estado final:");
+		p.muestraEstado();
+		
 		return true;
 	}
 	

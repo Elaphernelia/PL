@@ -70,114 +70,96 @@ import asint.TinyASint.Verdadero;
 import asint.TinyASint.While;
 import asint.TinyASint.Write;
 
-public class AsignaEspacio implements Procesamiento {
-	private int _dir = 0;
-	private int _nivel = 0;
+public class Etiquetado implements Procesamiento {
 
 	@Override
 	public void procesa(Prog_sin_decs prog) {
-		prog.insts().procesa(this);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Prog_con_decs prog) {
-		prog.decs().procesa(this);
-		prog.insts().procesa(this);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Decs_una dec) {
-		dec.dec().procesa(this);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Decs_muchas dec) {
-		dec.decs().procesa(this);
-		dec.dec().procesa(this);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Var var) {
-		var.dir = _dir;
-		var.nivel = _nivel;
-		
-		var.tipo().procesa(this);
-		
-		var.dir += var.size;
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Type type) {
-		type.tipo().procesa(this);
-		type.size = type.tipo().size;
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Proc proc) {
-		int dir_ant = _dir;
-		_nivel++;
-		_dir = 0;
-		
-		proc.pfs().procesa(this);
-		proc.bloque().procesa(this);
-		
-		proc.nivel = _nivel;
-		proc.size = _dir;
-		
-		_nivel--;
-		_dir = dir_ant;
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Param_f_sin param_f_sin) {
-		param_f_sin.size = 0;
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Param_f_con_una param_f_con_una) {
-		param_f_con_una.pf().procesa(this);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Param_f_con_muchas param_f_con_muchas) {
-		param_f_con_muchas.pfs().procesa(this);
-		param_f_con_muchas.pf().procesa(this);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Param_f_ref param_f_ref) {
-		param_f_ref.tipo().procesa(this);
-		param_f_ref.dir = _dir;
-		param_f_ref.nivel = _nivel;
-		param_f_ref.size = 1;
-		_dir++;
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Param_f_noref param_f_noref) {
-		param_f_noref.tipo().procesa(this);
-		param_f_noref.dir = _dir;
-		param_f_noref.nivel = _nivel;
-		param_f_noref.size = param_f_noref.tipo().size;
-		_dir += param_f_noref.size;
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Tipo_array tipo_array) {
-		tipo_array.tipo().procesa(this);
-		tipo_array.size = tipo_array.tipo().size * tipo_array.tamanioInt();
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Tipo_record tipo_record) {
-		tipo_record.campos().procesa(this);
-		tipo_record.size = tipo_record.campos().size;
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Tipo_pointer tipo_pointer) {
-		tipo_pointer.tipo().procesa(this);
-		tipo_pointer.size = 1;
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
@@ -189,19 +171,19 @@ public class AsignaEspacio implements Procesamiento {
 	@Override
 	public void procesa(Tipo_int tipo_int) {
 		// TODO Auto-generated method stub
-		tipo_int.size = 1;
+
 	}
 
 	@Override
 	public void procesa(Tipo_real tipo_real) {
 		// TODO Auto-generated method stub
-		tipo_real.size = 1;
+
 	}
 
 	@Override
 	public void procesa(Tipo_bool tipo_bool) {
 		// TODO Auto-generated method stub
-		tipo_bool.size = 1;
+
 	}
 
 	@Override
@@ -212,82 +194,86 @@ public class AsignaEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(Campos_uno campos_uno) {
-		campos_uno.campo().procesa(this);
-		campos_uno.size = campos_uno.campo().size;
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Campos_muchos campos_muchos) {
-		campos_muchos.campos().procesa(this);
-		campos_muchos.campo().procesa(this);
-		campos_muchos.size = campos_muchos.campos().size + campos_muchos.campo().size;
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Campo campo) {
-		campo.tipo().procesa(this);
-		campo.size = campo.tipo().size;
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Insts_una insts_una) {
-		insts_una.inst().procesa(this);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Insts_muchas insts_muchas) {
-		insts_muchas.insts().procesa(this);;
-		insts_muchas.inst().procesa(this);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(E_igual e_igual) {
-		e_igual.var().procesa(this);
-		e_igual.val().procesa(this);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(If if_) {
-		if_.condicion().procesa(this);
-		if_.pinst().procesa(this);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Ifelse ifelse) {
-		ifelse.condicion().procesa(this);
-		ifelse.pinst().procesa(this);
-		ifelse.pinstelse().procesa(this);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(While while_) {
-		while_.condicion().procesa(this);
-		while_.pinst().procesa(this);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Read read) {
-		read.exp().procesa(this);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Write write) {
-		write.exp().procesa(this);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Nl nl) {
-		// Nada por hacer
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(New new_) {
-		new_.exp().procesa(this);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Delete delete) {
-		delete.exp().procesa(this);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
@@ -298,17 +284,20 @@ public class AsignaEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(Bl bl) {
-		bl.bloque().procesa(this);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Lista_sin lista_sin) {
-		// Nada que asignar
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void procesa(Lista_con lista_con) {
-		lista_con.insts().procesa(this);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override

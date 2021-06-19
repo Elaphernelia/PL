@@ -1,10 +1,4 @@
-var int i1;
-var int i2;
-var int result;
-var int r1
-&&
-# Programa principal
-i1 = 3;
-i2 = 3;
-result = i1 + i2;
-result = 3.2 + 3
+write (true == true); nl;
+write (3 == 2); nl;
+write ("Hola" == "Hola"); nl;
+write 5 % 2; nl

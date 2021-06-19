@@ -57,6 +57,10 @@ public class ComprobacionTipos implements Procesamiento {
 		
 	}
 	
+	public static class Tipo_Ref extends TTipo {
+		
+	}
+	
 	public static class Tipo_Array extends TTipo {
 		public TTipo of;
 		public int n;
