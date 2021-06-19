@@ -1,0 +1,26 @@
+var string op;
+var int op1;
+var int op2;
+var int result
+&&
+write "Introduce un entero: "; read op1;
+write "Introduce otro entero: "; read op2;
+read op; # Flush input
+write "Introduce un operador (+,-,*,/,%): "; read op;
+if (op == "+") then
+	write op1 + op2; nl
+else if (op == "-") then
+	write op1 - op2; nl
+else if (op == "/") then
+	write op1 / op2; nl
+else if (op == "*") then
+	write op1 * op2; nl
+else if (op == "%" then
+	write op1 % op2; nl
+else
+	write "Operador desconocido "; write op; nl
+endif
+endif
+endif 
+endif
+endif

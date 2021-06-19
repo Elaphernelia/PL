@@ -16,6 +16,7 @@ public class Etiquetado implements Procesamiento {
 	@Override
 	public void procesa(Prog_con_decs prog) {
 		prog.etqi = _etq;
+		prog.decs().procesa(this);
 		prog.insts().procesa(this);
 		prog.etqs = _etq;
 	}
@@ -167,26 +168,37 @@ public class Etiquetado implements Procesamiento {
 		e_igual.var().procesa(this);
 		e_igual.val().procesa(this);
 		_etq++;
-		if (e_igual.val().esDesignador()) _etq++;
 		e_igual.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(If if_) {
-		// TODO Auto-generated method stub
-
+		if_.etqi = _etq;
+		if_.condicion().procesa(this);
+		_etq++;
+		if_.pinst().procesa(this);
+		if_.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Ifelse ifelse) {
-		// TODO Auto-generated method stub
-
+		ifelse.etqi = _etq;
+		ifelse.condicion().procesa(this);
+		_etq++;
+		ifelse.pinst().procesa(this);
+		_etq++;
+		ifelse.pinstelse().procesa(this);
+		ifelse.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(While while_) {
-		// TODO Auto-generated method stub
-
+		while_.etqi = _etq;
+		while_.condicion().procesa(this);
+		_etq++;
+		while_.pinst().procesa(this);
+		_etq++;
+		while_.etqs = _etq;
 	}
 
 	@Override
@@ -239,14 +251,14 @@ public class Etiquetado implements Procesamiento {
 
 	@Override
 	public void procesa(Lista_sin lista_sin) {
-		// TODO Auto-generated method stub
-
+		lista_sin.etqi = lista_sin.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Lista_con lista_con) {
-		// TODO Auto-generated method stub
-
+		lista_con.etqi = _etq;
+		lista_con.insts().procesa(this);
+		lista_con.etqs = _etq;
 	}
 
 	@Override
@@ -392,6 +404,7 @@ public class Etiquetado implements Procesamiento {
 		if (menor.arg0().getTipo() instanceof Tipo_Bool) _etq++;
 		menor.arg1().procesa(this);
 		if (menor.arg1().esDesignador()) _etq++;
+		_etq++;
 		menor.etqs = _etq;
 	}
 
@@ -403,28 +416,31 @@ public class Etiquetado implements Procesamiento {
 		if (men_ig.arg0().getTipo() instanceof Tipo_Bool) _etq++;
 		men_ig.arg1().procesa(this);
 		if (men_ig.arg1().esDesignador()) _etq++;
+		_etq++;
 		men_ig.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Mayor mayor) {
 		mayor.etqi = _etq;
-		mayor.arg0().procesa(this);
-		if (mayor.arg0().esDesignador()) _etq++;
-		if (mayor.arg0().getTipo() instanceof Tipo_Bool) _etq++;
 		mayor.arg1().procesa(this);
 		if (mayor.arg1().esDesignador()) _etq++;
+		if (mayor.arg0().getTipo() instanceof Tipo_Bool) _etq++;
+		mayor.arg0().procesa(this);
+		if (mayor.arg0().esDesignador()) _etq++;
+		_etq++;
 		mayor.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(May_ig may_ig) {
 		may_ig.etqi = _etq;
-		may_ig.arg0().procesa(this);
-		if (may_ig.arg0().esDesignador()) _etq++;
-		if (may_ig.arg0().getTipo() instanceof Tipo_Bool) _etq++;
 		may_ig.arg1().procesa(this);
 		if (may_ig.arg1().esDesignador()) _etq++;
+		if (may_ig.arg0().getTipo() instanceof Tipo_Bool) _etq++;
+		may_ig.arg0().procesa(this);
+		if (may_ig.arg0().esDesignador()) _etq++;
+		_etq++;
 		may_ig.etqs = _etq;
 	}
 

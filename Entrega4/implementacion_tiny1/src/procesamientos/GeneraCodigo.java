@@ -10,24 +10,27 @@ public class GeneraCodigo implements Procesamiento {
 	public GeneraCodigo(MaquinaP p) {
 		_p = p;
 	}
+	
+	private void checkNinsts(Genero g) {
+		if (_p.ninsts() != g.etqs) {
+			System.err.println("Warning: El numero de instrucciones no coincide con la etiqueta...");
+			System.err.printf("  ninsts: %3d, etqs: %3d%n", _p.ninsts(), g.etqs);
+		}
+	}
 
 	@Override
 	public void procesa(Prog_sin_decs prog) {
-		prog.insts().procesa(this);
-		if (_p.ninsts() != prog.etqs) {
-			System.err.println("Warning: El numero de instrucciones no coincide con la etiqueta...");
-			System.err.printf("  ninsts: %3d, etqs: %3d%n", _p.ninsts(), prog.etqs);
-		}
+		prog.insts().procesa(this);		
+		checkNinsts(prog);
+		_p.ponInstruccion(_p.stop());
 	}
 
 	@Override
 	public void procesa(Prog_con_decs prog) {
 		prog.decs().procesa(this); // Codigo de procedimientos
 		prog.insts().procesa(this);
-		if (_p.ninsts() != prog.etqs) {
-			System.err.println("Warning: El numero de instrucciones no coincide con la etiqueta...");
-			System.err.printf("  ninsts: %3d, etqs: %3d%n", _p.ninsts(), prog.etqs);
-		}
+		checkNinsts(prog);
+		_p.ponInstruccion(_p.stop());
 	}
 
 	@Override
@@ -181,20 +184,30 @@ public class GeneraCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(If if_) {
-		// TODO Auto-generated method stub
-
+		if_.condicion().procesa(this);
+		_p.ponInstruccion(_p.irF(if_.etqs));
+		if_.pinst().procesa(this);
 	}
 
 	@Override
 	public void procesa(Ifelse ifelse) {
-		// TODO Auto-generated method stub
-
+		ifelse.condicion().procesa(this);
+		// Si no se cumple la condicion, vamos al inicio del else
+		_p.ponInstruccion(_p.irF(ifelse.pinstelse().etqi));
+		ifelse.pinst().procesa(this);
+		// Cuando acabamos la parte del if, vamos al final del todo saltando el else
+		_p.ponInstruccion(_p.irA(ifelse.etqs));
+		ifelse.pinstelse().procesa(this);
 	}
 
 	@Override
 	public void procesa(While while_) {
-		// TODO Auto-generated method stub
-
+		while_.condicion().procesa(this);
+		// Si no se cumple la condicion, salimos del bucle
+		_p.ponInstruccion(_p.irF(while_.etqs));
+		while_.pinst().procesa(this);
+		// Vamos al comienzo para comprobar si se cumple la condicion
+		_p.ponInstruccion(_p.irA(while_.etqi));
 	}
 
 	@Override
@@ -264,14 +277,12 @@ public class GeneraCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Lista_sin lista_sin) {
-		// TODO Auto-generated method stub
-
+		// Nada por hacer
 	}
 
 	@Override
 	public void procesa(Lista_con lista_con) {
-		// TODO Auto-generated method stub
-
+		lista_con.insts().procesa(this);
 	}
 
 	@Override
@@ -331,7 +342,6 @@ public class GeneraCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Null null_) {
-		// TODO Auto-generated method stub
 		_p.ponInstruccion(_p.apilaInt(-1));
 	}
 

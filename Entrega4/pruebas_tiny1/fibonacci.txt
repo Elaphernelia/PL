@@ -1,0 +1,17 @@
+var int fin;
+var int i;
+var int prev1;
+var int prev2;
+var int act
+&&
+i = 0;
+prev1 = 0;
+prev2 = 1;
+fin = 15;
+while (i < fin) do
+	act = prev1 + prev2;
+	prev2 = prev1;
+	prev1 = act;
+	write "fib("; write i; write ") = "; write act; nl; 
+	i = i + 1
+endwhile
