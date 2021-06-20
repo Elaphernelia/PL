@@ -111,6 +111,7 @@ public class AsignaEspacio implements Procesamiento {
 		var.tipo().procesa(this);
 		
 		var.size = var.tipo().size;
+		var.basesize = var.tipo().basesize;
 		_dir += var.size;
 	}
 
@@ -174,7 +175,8 @@ public class AsignaEspacio implements Procesamiento {
 	@Override
 	public void procesa(Tipo_array tipo_array) {
 		tipo_array.tipo().procesa(this);
-		tipo_array.size = tipo_array.tipo().size * tipo_array.tamanioInt();
+		tipo_array.basesize = tipo_array.tipo().size;
+		tipo_array.size = tipo_array.basesize * tipo_array.tamanioInt();
 	}
 
 	@Override
@@ -336,50 +338,36 @@ public class AsignaEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(Bloque_sin bloque_sin) {
-		// TODO Auto-generated method stub
-
+		// No hay nada
 	}
 
 	@Override
 	public void procesa(Bloque_con bloque_con) {
-		// TODO Auto-generated method stub
-
+		bloque_con.prog().procesa(this);
 	}
 
 	@Override
 	public void procesa(Entero entero) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void procesa(Real real) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void procesa(Cadena cadena) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void procesa(Verdadero verdadero) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void procesa(Falso falso) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void procesa(Null null_) {
-		// TODO Auto-generated method stub
-		null_.size = 1;
 	}
 
 	@Override
@@ -387,6 +375,7 @@ public class AsignaEspacio implements Procesamiento {
 		identificador.dir = identificador.getVinculo().dir;
 		identificador.size = identificador.getVinculo().size;
 		identificador.nivel = identificador.getVinculo().nivel;
+		identificador.basesize = identificador.getVinculo().basesize;
 	}
 
 	@Override
@@ -479,8 +468,9 @@ public class AsignaEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(Indexacion indexacion) {
-		// TODO Auto-generated method stub
-
+		indexacion.arg0().procesa(this);
+		indexacion.arg1().procesa(this);
+		indexacion.size = indexacion.arg0().basesize;
 	}
 
 	@Override

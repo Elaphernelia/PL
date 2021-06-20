@@ -402,7 +402,9 @@ public class Vinculacion implements Procesamiento {
 	@Override
 	public void procesa(Bloque_con bloque_con) {
 		// Vincula
+		_t_sim.anida();
 		bloque_con.prog().procesa(this);
+		_t_sim.desanida();
 	}
 
 	@Override

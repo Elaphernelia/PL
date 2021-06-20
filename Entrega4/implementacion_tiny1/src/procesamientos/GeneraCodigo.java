@@ -598,7 +598,13 @@ public class GeneraCodigo implements Procesamiento {
 	@Override
 	public void procesa(Indexacion indexacion) {
 		// TODO Auto-generated method stub
-
+		// TODO Pasarlo a la memoria
+		indexacion.arg0().procesa(this);
+		indexacion.arg1().procesa(this);
+		if (indexacion.arg1().esDesignador()) _p.ponInstruccion(_p.apilaInd());
+		_p.ponInstruccion(_p.apilaInt(indexacion.arg0().basesize));
+		_p.ponInstruccion(_p.mul());
+		_p.ponInstruccion(_p.suma());
 	}
 
 	@Override

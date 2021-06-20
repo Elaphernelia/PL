@@ -1,19 +1,16 @@
-type record {
-    int prev1;
-    int prev2
-} tFibInfo;
 var int i;
-var tFibInfo fi
+type int myInt;
+type array[2] of myInt intarr;
+var array[3] of int fi
 &&
-i = 0;
-# fi.prev1 = 0;
-# fi.prev2 = 1;
-while (i < 10) do {
-	var int act
-	&&
-	# act = fi.prev1 + fi.prev2;
-	# fi.prev2 = fi.prev1;
-	# fi.prev1 = act;
-	# write "fib("; write i; write ") = "; write act; nl; 
+i = 2;
+fi[0] = 0;
+fi[1] = 1;
+write "fib(0) = 0"; nl; write "fib(1) = 1"; nl;
+while (i < 10) do
+	fi[2] = fi[0] + fi[1];
+	fi[0] = fi[1];
+	fi[1] = fi[2];
+	write "fib("; write i; write ") = "; write fi[2]; nl; 
 	i = i + 1
-} endwhile
+endwhile

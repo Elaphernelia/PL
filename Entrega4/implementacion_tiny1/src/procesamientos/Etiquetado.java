@@ -522,8 +522,12 @@ public class Etiquetado implements Procesamiento {
 
 	@Override
 	public void procesa(Indexacion indexacion) {
-		// TODO Auto-generated method stub
-
+		indexacion.etqi = _etq;
+		indexacion.arg0().procesa(this);
+		indexacion.arg1().procesa(this);
+		if (indexacion.arg1().esDesignador()) _etq++;
+		_etq += 3;
+		indexacion.etqs = _etq;
 	}
 
 	@Override

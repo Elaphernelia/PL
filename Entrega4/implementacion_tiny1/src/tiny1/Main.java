@@ -87,8 +87,8 @@ public class Main {
 		
 		// TODO: Obtener tamaños de la asignacion de espacio
 		int tamdatos = prog.size;
-		int tampila = 10;
-		int tamheap = 10;
+		int tampila = 20;
+		int tamheap = 20;
 		int ndisplays = a.getMaxNivel();
 		MaquinaP p = new MaquinaP(tamdatos,tampila,tamheap,ndisplays);
 		
