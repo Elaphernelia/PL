@@ -12,13 +12,6 @@ public class ComprobacionTipos implements Procesamiento {
 	private boolean _dirty = false;
 	private Map<String, TTipo> _tab_tipos;
 	
-	public static interface Tipable {
-		public TTipo getTipo();
-		public default void setTipo(TTipo t) {
-			throw new UnsupportedOperationException("No se puede poner un tipo"); 
-		}
-	}
-	
 	public static abstract class TTipo {
 		public boolean isNum() { return false; }
 		public boolean isOK() { return false; }
@@ -27,9 +20,10 @@ public class ComprobacionTipos implements Procesamiento {
 		public boolean isEntero() { return false; }
 		public boolean isReal() { return false; }
 		public boolean isString() { return false; }
+		public boolean isRef() { return false; }
 	}
 	
-	public static class Tipo_OK extends TTipo {
+	public static class TTipo_OK extends TTipo {
 		public boolean isOK() { return true; }
 	}
 	
@@ -65,6 +59,8 @@ public class ComprobacionTipos implements Procesamiento {
 		public Tipo_Ref(TTipo of) {
 			this.of = of;
 		}
+		
+		public boolean isRef() { return true; }
 	}
 	
 	public static class Tipo_Pointer extends Tipo_Ref {
@@ -81,15 +77,15 @@ public class ComprobacionTipos implements Procesamiento {
 		}
 	}
 	
-	public static class Tipo_Record extends TTipo {
+	public static class TTipo_Record extends TTipo {
 		public Map<String, TTipo> campos;
 		
-		public Tipo_Record(Campo c) {
+		public TTipo_Record(Campo c) {
 			campos = new HashMap<String, TTipo>();
 			campos.put(c.identificador().toString(), c.getTipo());
 		}
 		
-		public Tipo_Record(Tipo_Record r, Campo c) {
+		public TTipo_Record(TTipo_Record r, Campo c) {
 			campos = r.campos;
 			campos.put(c.identificador().toString(), c.getTipo());
 		}
@@ -103,7 +99,7 @@ public class ComprobacionTipos implements Procesamiento {
 		return _dirty;
 	}
 	
-	private void error(Tipable g) {
+	private void error(Genero g) {
 		System.out.println("Error de tipos en " + g);
 		_dirty = true;
 		g.setTipo(new Tipo_Error());
@@ -132,9 +128,9 @@ public class ComprobacionTipos implements Procesamiento {
 	}
 	
 	private boolean compatibleRecord(TTipo t0, TTipo t1) {
-		if (t0 instanceof Tipo_Record && t1 instanceof Tipo_Record) {
-			Tipo_Record tr0 = (Tipo_Record)t0;
-			Tipo_Record tr1 = (Tipo_Record)t1;
+		if (t0 instanceof TTipo_Record && t1 instanceof TTipo_Record) {
+			TTipo_Record tr0 = (TTipo_Record)t0;
+			TTipo_Record tr1 = (TTipo_Record)t1;
 			
 			if (tr0.campos.size() != tr1.campos.size()) return false;
 			
@@ -289,14 +285,14 @@ public class ComprobacionTipos implements Procesamiento {
 	@Override
 	public void procesa(Campos_uno campos_uno) {
 		campos_uno.campo().procesa(this);
-		campos_uno.setTipo(new Tipo_Record(campos_uno.campo()));
+		campos_uno.setRecord(new TTipo_Record(campos_uno.campo()));
 	}
 
 	@Override
 	public void procesa(Campos_muchos campos_muchos) {
 		campos_muchos.campos().procesa(this);
 		campos_muchos.campo().procesa(this);
-		campos_muchos.setTipo(new Tipo_Record(campos_muchos.campos().getTipo(), campos_muchos.campo()));
+		campos_muchos.setRecord(new TTipo_Record(campos_muchos.campos().getRecord(), campos_muchos.campo()));
 	}
 
 	@Override
@@ -317,7 +313,7 @@ public class ComprobacionTipos implements Procesamiento {
 		insts_muchas.inst().procesa(this);
 		if (insts_muchas.insts().getTipo().isOK()
 			&& insts_muchas.inst().getTipo().isOK()) {
-			insts_muchas.setTipo(new Tipo_OK());
+			insts_muchas.setTipo(new TTipo_OK());
 			
 		} else {
 			error(insts_muchas);
@@ -328,8 +324,9 @@ public class ComprobacionTipos implements Procesamiento {
 	public void procesa(E_igual e_igual) {
 		e_igual.var().procesa(this);
 		e_igual.val().procesa(this);
+		
 		if (e_igual.var().esDesignador() && compatible(e_igual.var().getTipo(), e_igual.val().getTipo())) {
-			e_igual.setTipo(new Tipo_OK());
+			e_igual.setTipo(new TTipo_OK());
 		} else {
 			error(e_igual);
 		}
@@ -341,7 +338,7 @@ public class ComprobacionTipos implements Procesamiento {
 		if_.pinst().procesa(this);
 		
 		if (if_.condicion().getTipo().isBool() && if_.pinst().getTipo().isOK()) {
-			if_.setTipo(new Tipo_OK());
+			if_.setTipo(new TTipo_OK());
 		} else {
 			error(if_);
 		}
@@ -354,7 +351,7 @@ public class ComprobacionTipos implements Procesamiento {
 		ifelse.pinstelse().procesa(this);
 		
 		if (ifelse.condicion().getTipo().isBool() && ifelse.pinst().getTipo().isOK() && ifelse.pinstelse().getTipo().isOK()) {
-			ifelse.setTipo(new Tipo_OK());
+			ifelse.setTipo(new TTipo_OK());
 		} else {
 			error(ifelse);
 		}
@@ -366,7 +363,7 @@ public class ComprobacionTipos implements Procesamiento {
 		while_.pinst().procesa(this);
 		
 		if (while_.condicion().getTipo().isBool() && while_.pinst().getTipo().isOK()) {
-			while_.setTipo(new Tipo_OK());
+			while_.setTipo(new TTipo_OK());
 		} else {
 			error(while_);
 		}
@@ -378,7 +375,7 @@ public class ComprobacionTipos implements Procesamiento {
 		Exp e = read.exp();
 		
 		if (e.esDesignador() && (e.getTipo().isEntero() || e.getTipo().isReal() || e.getTipo().isString())) {
-			read.setTipo(new Tipo_OK());
+			read.setTipo(new TTipo_OK());
 		} else {
 			error(read);
 		}
@@ -390,7 +387,7 @@ public class ComprobacionTipos implements Procesamiento {
 		Exp e = write.exp();
 		
 		if (e.getTipo().isEntero() || e.getTipo().isReal() || e.getTipo().isString() || e.getTipo().isBool()) {
-			write.setTipo(new Tipo_OK());
+			write.setTipo(new TTipo_OK());
 		} else {
 			error(write);
 		}
@@ -398,7 +395,7 @@ public class ComprobacionTipos implements Procesamiento {
 
 	@Override
 	public void procesa(Nl nl) {
-		nl.setTipo(new Tipo_OK());
+		nl.setTipo(new TTipo_OK());
 	}
 
 	@Override
@@ -406,7 +403,7 @@ public class ComprobacionTipos implements Procesamiento {
 		new_.exp().procesa(this);
 		
 		if (new_.exp().getTipo() instanceof Tipo_Pointer) {
-			new_.setTipo(new Tipo_OK());
+			new_.setTipo(new TTipo_OK());
 		} else {
 			error(new_);
 		}
@@ -417,7 +414,7 @@ public class ComprobacionTipos implements Procesamiento {
 		delete.exp().procesa(this);
 		
 		if (delete.exp().getTipo() instanceof Tipo_Pointer) {
-			delete.setTipo(new Tipo_OK());
+			delete.setTipo(new TTipo_OK());
 		} else {
 			error(delete);
 		}
@@ -436,7 +433,7 @@ public class ComprobacionTipos implements Procesamiento {
 
 	@Override
 	public void procesa(Lista_sin lista_sin) {
-		lista_sin.setTipo(new Tipo_OK());
+		lista_sin.setTipo(new TTipo_OK());
 	}
 
 	@Override
@@ -447,7 +444,7 @@ public class ComprobacionTipos implements Procesamiento {
 
 	@Override
 	public void procesa(Param_r_sin param_r_sin) {
-		param_r_sin.setTipo(new Tipo_OK());
+		param_r_sin.setTipo(new TTipo_OK());
 	}
 
 	@Override
@@ -469,7 +466,7 @@ public class ComprobacionTipos implements Procesamiento {
 
 	@Override
 	public void procesa(Bloque_sin bloque_sin) {
-		bloque_sin.setTipo(new Tipo_OK());
+		bloque_sin.setTipo(new TTipo_OK());
 	}
 
 	@Override
@@ -510,7 +507,7 @@ public class ComprobacionTipos implements Procesamiento {
 
 	@Override
 	public void procesa(Identificador identificador) {
-		identificador.setTipo(identificador.vinculo.getTipo());
+		identificador.setTipo(identificador.getVinculo().tipo().getTipo());
 	}
 
 	@Override
@@ -717,8 +714,8 @@ public class ComprobacionTipos implements Procesamiento {
 	public void procesa(Acc_registro acc_registro) {
 		// TODO Auto-generated method stub
 		acc_registro.registro().procesa(this);
-		if (acc_registro.registro().getTipo() instanceof Tipo_Record) {
-			Tipo_Record r = (Tipo_Record) acc_registro.registro().getTipo();
+		if (acc_registro.registro().getTipo() instanceof TTipo_Record) {
+			TTipo_Record r = (TTipo_Record) acc_registro.registro().getTipo();
 			acc_registro.setTipo(r.campos.get(acc_registro.campo().toString()));
 		} else {
 			error(acc_registro);
@@ -729,8 +726,8 @@ public class ComprobacionTipos implements Procesamiento {
 	public void procesa(Acc_registro_indirecto acc_registro_in) {
 		// TODO Auto-generated method stub
 		acc_registro_in.registro().procesa(this);
-		if (acc_registro_in.registro().getTipo() instanceof Tipo_Record) {
-			Tipo_Record r = (Tipo_Record) acc_registro_in.registro().getTipo();
+		if (acc_registro_in.registro().getTipo() instanceof TTipo_Record) {
+			TTipo_Record r = (TTipo_Record) acc_registro_in.registro().getTipo();
 			acc_registro_in.setTipo(r.campos.get(acc_registro_in.campo().toString()));
 		} else {
 			error(acc_registro_in);

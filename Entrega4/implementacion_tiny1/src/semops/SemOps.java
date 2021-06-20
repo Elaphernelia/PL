@@ -2,6 +2,7 @@ package semops;
 
 import alex.StringLocalizado;
 import asint.TinyASint;
+import ast.desc.Token;
 
 public class SemOps extends TinyASint {
 	public Prog prog(Decs decs, Insts insts) {
@@ -35,6 +36,13 @@ public class SemOps extends TinyASint {
 			case "%": return modulo(arg0, arg1);
 		}
 		throw new UnsupportedOperationException("exp "+op);
+	}
+	
+	public Exp opera_dos(StringLocalizado op, Exp arg0, Exp arg1) {
+		Exp r = opera_dos(op.toString(), arg0, arg1);
+		r.line = arg0.line;
+		r.col = arg0.col;
+		return r;
 	}
 	
 	public Exp opera_opposcincoasoc(String op, Exp arg_a, StringLocalizado arg_v, Exp arg1) {

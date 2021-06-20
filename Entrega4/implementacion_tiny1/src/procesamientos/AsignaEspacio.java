@@ -384,9 +384,9 @@ public class AsignaEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(Identificador identificador) {
-		identificador.dir = identificador.vinculo.dir;
-		identificador.size = identificador.vinculo.size;
-		identificador.nivel = identificador.vinculo.nivel;
+		identificador.dir = identificador.getVinculo().dir;
+		identificador.size = identificador.getVinculo().size;
+		identificador.nivel = identificador.getVinculo().nivel;
 	}
 
 	@Override

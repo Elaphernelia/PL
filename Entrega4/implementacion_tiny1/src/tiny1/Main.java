@@ -94,6 +94,7 @@ public class Main {
 		
 		GeneraCodigo c = new GeneraCodigo(p);
 		prog.procesa(c);
+		p.ponInstruccion(p.stop());
 		System.out.println("Generado código de máquina-p:");
 		p.muestraCodigo();
 		

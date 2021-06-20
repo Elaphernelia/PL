@@ -2,7 +2,6 @@ package procesamientos;
 
 import asint.TinyASint.*;
 import maquinaP.MaquinaP;
-import procesamientos.ComprobacionTipos.*;
 
 public class GeneraCodigo implements Procesamiento {
 	private MaquinaP _p;
@@ -11,18 +10,24 @@ public class GeneraCodigo implements Procesamiento {
 		_p = p;
 	}
 	
+	private void checkNinstsi(Genero g) {
+		if (_p.ninsts() != g.etqi) {
+			System.err.println("Warning: El numero de instrucciones no coincide con la etqi en "+g+"...");
+			System.err.printf("  ninsts: %3d, etqs: %3d%n", _p.ninsts(), g.etqi);
+		}
+	}
+	
 	private void checkNinsts(Genero g) {
 		if (_p.ninsts() != g.etqs) {
-			System.err.println("Warning: El numero de instrucciones no coincide con la etiqueta...");
+			System.err.println("Warning: El numero de instrucciones no coincide con la etqs en "+g+"...");
 			System.err.printf("  ninsts: %3d, etqs: %3d%n", _p.ninsts(), g.etqs);
 		}
 	}
 
 	@Override
 	public void procesa(Prog_sin_decs prog) {
-		prog.insts().procesa(this);		
+		prog.insts().procesa(this);
 		checkNinsts(prog);
-		_p.ponInstruccion(_p.stop());
 	}
 
 	@Override
@@ -30,7 +35,6 @@ public class GeneraCodigo implements Procesamiento {
 		prog.decs().procesa(this); // Codigo de procedimientos
 		prog.insts().procesa(this);
 		checkNinsts(prog);
-		_p.ponInstruccion(_p.stop());
 	}
 
 	@Override
@@ -172,6 +176,7 @@ public class GeneraCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(E_igual e_igual) {
+		checkNinstsi(e_igual);
 		e_igual.var().procesa(this);
 		e_igual.val().procesa(this);
 		
@@ -180,6 +185,8 @@ public class GeneraCodigo implements Procesamiento {
 		} else {
 			_p.ponInstruccion(_p.desapilaInd());
 		}
+		
+		checkNinsts(e_igual);
 	}
 
 	@Override
@@ -202,12 +209,14 @@ public class GeneraCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(While while_) {
+		checkNinstsi(while_);
 		while_.condicion().procesa(this);
 		// Si no se cumple la condicion, salimos del bucle
 		_p.ponInstruccion(_p.irF(while_.etqs));
 		while_.pinst().procesa(this);
 		// Vamos al comienzo para comprobar si se cumple la condicion
 		_p.ponInstruccion(_p.irA(while_.etqi));
+		checkNinsts(while_);
 	}
 
 	@Override
@@ -271,8 +280,7 @@ public class GeneraCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Bl bl) {
-		// TODO Auto-generated method stub
-
+		bl.bloque().procesa(this);
 	}
 
 	@Override
@@ -305,14 +313,12 @@ public class GeneraCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Bloque_sin bloque_sin) {
-		// TODO Auto-generated method stub
-
+		// No generamos código
 	}
 
 	@Override
 	public void procesa(Bloque_con bloque_con) {
-		// TODO Auto-generated method stub
-
+		bloque_con.prog().procesa(this);
 	}
 
 	@Override
@@ -405,6 +411,7 @@ public class GeneraCodigo implements Procesamiento {
 	@Override
 	public void procesa(Menor rop) {
 		// Nota: En el caso de bool: a < b <-> !a ^ b
+		checkNinstsi(rop);
 		
 		rop.arg0().procesa(this);
 		if (rop.arg0().esDesignador()) _p.ponInstruccion(_p.apilaInd());
@@ -421,6 +428,8 @@ public class GeneraCodigo implements Procesamiento {
 		} else {
 			throw new IllegalStateException("Hubo un error de tipos no detectado");
 		}
+		
+		checkNinsts(rop);
 	}
 
 	@Override

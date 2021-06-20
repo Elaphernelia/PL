@@ -1,11 +1,9 @@
 package asint;
 
 import alex.StringLocalizado;
-import procesamientos.ComprobacionTipos.Tipable;
 import procesamientos.ComprobacionTipos.TTipo;
-import procesamientos.ComprobacionTipos.Tipo_OK;
-import procesamientos.ComprobacionTipos.Tipo_Record;
-import procesamientos.ComprobacionTipos.Tipo_Error;
+import procesamientos.ComprobacionTipos.TTipo_OK;
+import procesamientos.ComprobacionTipos.TTipo_Record;
 import procesamientos.Procesamiento;
 
 public class TinyASint {
@@ -13,33 +11,38 @@ public class TinyASint {
 	 ** INFO PARA GEN. CODIGO **
 	 ***************************/
 	public static abstract class Genero {
+		public int line = -1;
+		public int col = -1;
+		
 		public int dir = -1;
 		public int nivel = -1;
 		public int size = -1;
 		
 		public int etqi = -1;
 		public int etqs = -1;
+		
+		public String toString() {
+			return getClass().getSimpleName()+"@"+line+":"+col;
+		}
+		
+		private TTipo _t;
+		public TTipo getTipo() { return _t; }
+		public void setTipo(TTipo t) { _t = t; }
 	}
+	
+	/*public static interface Designador {
+		public Var getVar();
+	}*/
 	
 	/*************
 	 ** GENEROS **
 	 *************/
 
-	public static abstract class Prog extends Genero implements Tipable {
-		private TTipo _t;
-		@Override
-		public TTipo getTipo() { return _t; }
-		@Override
-		public void setTipo(TTipo t) { _t = t; }
+	public static abstract class Prog extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Exp extends Genero implements Tipable {
-		private TTipo _t;
-		@Override
-		public TTipo getTipo() { return _t; }
-		@Override
-		public void setTipo(TTipo t) { _t = t; }
+	public static abstract class Exp extends Genero {
 		public abstract int prioridad();
 		public boolean esDesignador() { return false; }
 		public abstract void procesa(Procesamiento p);
@@ -49,39 +52,19 @@ public class TinyASint {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Dec extends Genero implements Tipable {
-		private TTipo _t;
-		@Override
-		public TTipo getTipo() { return _t; }
-		@Override
-		public void setTipo(TTipo t) { _t = t; }
+	public static abstract class Dec extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Insts extends Genero implements Tipable {
-		private TTipo _t;
-		@Override
-		public TTipo getTipo() { return _t; }
-		@Override
-		public void setTipo(TTipo t) { _t = t; }
+	public static abstract class Insts extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Inst extends Genero implements Tipable {
-		private TTipo _t;
-		@Override
-		public TTipo getTipo() { return _t; }
-		@Override
-		public void setTipo(TTipo t) { _t = t; }
+	public static abstract class Inst extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Tipo extends Genero implements Tipable {
-		private TTipo _t;
-		@Override
-		public TTipo getTipo() { return _t; }
-		@Override
-		public void setTipo(TTipo t) { _t = t; }
+	public static abstract class Tipo extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
@@ -89,28 +72,25 @@ public class TinyASint {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class PF extends Genero implements Tipable {
-		private TTipo _t;
-		@Override
-		public TTipo getTipo() { return _t; }
-		@Override
-		public void setTipo(TTipo t) { _t = t; }
+	public static abstract class PF extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
 	public static abstract class Campos extends Genero {
-		private Tipo_Record _t;
-		public Tipo_Record getTipo() { return _t; }
-		public void setTipo(Tipo_Record t) { _t = t; }
 		public abstract void procesa(Procesamiento p);
+		private TTipo_Record _r;
+
+		public void setRecord(TTipo_Record r) {
+			setTipo(r);
+			_r = r;
+		}
+		
+		public TTipo_Record getRecord() {
+			return _r;
+		}
 	}
 	
-	public static class Campo extends Genero implements Tipable {
-		private TTipo _t;
-		@Override
-		public TTipo getTipo() { return _t; }
-		@Override
-		public void setTipo(TTipo t) { _t = t; }
+	public static class Campo extends Genero {
 		private Tipo _tipo;
 		private StringLocalizado _identificador;
 		
@@ -131,30 +111,15 @@ public class TinyASint {
 		}
 	}
 	
-	public static abstract class PR extends Genero implements Tipable {
-		private TTipo _t;
-		@Override
-		public TTipo getTipo() { return _t; }
-		@Override
-		public void setTipo(TTipo t) { _t = t; }
+	public static abstract class PR extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class PInst extends Genero implements Tipable {
-		private TTipo _t;
-		@Override
-		public TTipo getTipo() { return _t; }
-		@Override
-		public void setTipo(TTipo t) { _t = t; }
+	public static abstract class PInst extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
-	public static abstract class Bloque extends Genero implements Tipable {
-		private TTipo _t;
-		@Override
-		public TTipo getTipo() { return _t; }
-		@Override
-		public void setTipo(TTipo t) { _t = t; }
+	public static abstract class Bloque extends Genero {
 		public abstract void procesa(Procesamiento p);
 	}
 	
@@ -294,7 +259,7 @@ public class TinyASint {
 		private Bloque _bloque;
 		
 		@Override
-		public TTipo getTipo() { return new Tipo_OK(); }
+		public TTipo getTipo() { return new TTipo_OK(); }
 		
 		public Proc(StringLocalizado procName, PFs pfs, Bloque bloque) {
 			_procName = procName;
@@ -768,7 +733,7 @@ public class TinyASint {
 	public static class Call extends Inst {
 		private StringLocalizado _procName;
 		private PR _pr;
-		public Tipable vinculo;
+		private Proc vinculo;
 		
 		public Call(StringLocalizado procName, PR pr) {
 			_procName = procName; _pr = pr;
@@ -785,6 +750,14 @@ public class TinyASint {
 		@Override
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
+		}
+		
+		public void setVinculo(Proc v) {
+			vinculo = v;
+		}
+		
+		public Proc getVinculo() {
+			return vinculo;
 		}
 	}
 	
@@ -987,7 +960,7 @@ public class TinyASint {
 	
 	public static class Identificador extends Exp {
 		private StringLocalizado _name;
-		public Var vinculo;
+		private Var vinculo;
 		
 		public Identificador(StringLocalizado name) {
 			_name = name;
@@ -1010,6 +983,14 @@ public class TinyASint {
 		@Override
 		public boolean esDesignador() {
 			return true;
+		}
+		
+		public void setVinculo(Var v) {
+			vinculo = v;
+		}
+		
+		public Var getVinculo() {
+			return vinculo;
 		}
 	}
 	

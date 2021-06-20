@@ -245,8 +245,7 @@ public class Etiquetado implements Procesamiento {
 
 	@Override
 	public void procesa(Bl bl) {
-		// TODO Auto-generated method stub
-
+		bl.bloque().procesa(this);
 	}
 
 	@Override
@@ -281,14 +280,12 @@ public class Etiquetado implements Procesamiento {
 
 	@Override
 	public void procesa(Bloque_sin bloque_sin) {
-		// TODO Auto-generated method stub
-
+		// No se genera código
 	}
 
 	@Override
 	public void procesa(Bloque_con bloque_con) {
-		// TODO Auto-generated method stub
-
+		bloque_con.prog().procesa(this);
 	}
 
 	@Override

@@ -1,16 +1,19 @@
-var int i
+type record {
+    int prev1;
+    int prev2
+} tFibInfo;
+var int i;
+var tFibInfo fi
 &&
-i = 1;
-while (i < 50) do
-	if (i % 3 != 0 and i % 5 != 0) then
-		write i
-	endif;
-	if (i % 3 == 0) then
-		write "Fizz"
-	endif;
-	if (i % 5 == 0) then
-		write "Buzz"
-	endif;
-	nl;
+i = 0;
+# fi.prev1 = 0;
+# fi.prev2 = 1;
+while (i < 10) do {
+	var int act
+	&&
+	# act = fi.prev1 + fi.prev2;
+	# fi.prev2 = fi.prev1;
+	# fi.prev1 = act;
+	# write "fib("; write i; write ") = "; write act; nl; 
 	i = i + 1
-endwhile
+} endwhile
