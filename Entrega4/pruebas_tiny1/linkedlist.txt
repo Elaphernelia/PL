@@ -1,10 +1,10 @@
 type int myInt;
-var pointer tLinkedList act;
 type record {
 	int val;
 	pointer tLinkedList next
 } tLinkedList;
 var tLinkedList ll;
+var pointer tLinkedList act;
 var int i
 &&
 i = 0;

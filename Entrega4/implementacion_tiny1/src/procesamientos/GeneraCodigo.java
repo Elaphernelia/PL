@@ -3,6 +3,7 @@ package procesamientos;
 import asint.TinyASint.*;
 import maquinaP.MaquinaP;
 import procesamientos.ComprobacionTipos.TTipo_Record;
+import procesamientos.ComprobacionTipos.TTipo_Pointer;
 
 public class GeneraCodigo implements Procesamiento {
 	private MaquinaP _p;
@@ -263,14 +264,16 @@ public class GeneraCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(New new_) {
-		// TODO Auto-generated method stub
-
+		new_.exp().procesa(this);
+		_p.ponInstruccion(_p.alloc(new_.exp().basesize));
+		_p.ponInstruccion(_p.desapilaInd());
 	}
 
 	@Override
 	public void procesa(Delete delete) {
 		// TODO Auto-generated method stub
-
+		delete.exp().procesa(this);
+		_p.ponInstruccion(_p.dealloc(delete.exp().basesize));
 	}
 
 	@Override
@@ -622,13 +625,21 @@ public class GeneraCodigo implements Procesamiento {
 	@Override
 	public void procesa(Acc_registro_indirecto acc_registro_in) {
 		// TODO Auto-generated method stub
-
+		acc_registro_in.registro().procesa(this);
+		_p.ponInstruccion(_p.apilaInd());
+		
+		TTipo_Pointer p = (TTipo_Pointer) acc_registro_in.registro().getTipo();
+		TTipo_Record tr = (TTipo_Record) p.of;
+		int despl = tr.campos.get(acc_registro_in.campo().toString()).despl;
+		_p.ponInstruccion(_p.apilaInt(despl));
+		_p.ponInstruccion(_p.suma());
 	}
 
 	@Override
 	public void procesa(Indireccion indireccion) {
 		// TODO Auto-generated method stub
-
+		indireccion.arg().procesa(this);
+		_p.ponInstruccion(_p.apilaInd());
 	}
 
 }
