@@ -2,10 +2,12 @@ type int myInt;
 type array[3] of myInt intarr;
 type record {
 	intarr fi;
-	int i
+	int i;
+	pointer tRecord recor
 } tRecord;
 var tRecord pi
 &&
+# new pi.recor;
 pi.i = 2;
 pi.fi[0] = 0;
 pi.fi[1] = 1;
