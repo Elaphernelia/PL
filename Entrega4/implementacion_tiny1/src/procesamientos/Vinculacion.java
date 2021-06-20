@@ -201,13 +201,14 @@ public class Vinculacion implements Procesamiento {
 	@Override
 	public void procesa(Var var) {
 		// Construye
+		var.tipo().procesa(this);
+		
 		StringLocalizado id = var.var();
 		if (_t_sim.contieneAct(id)) {
 			errorDec(id);
 		} else {
 			_t_sim.put(id, var);
 		}
-		var.tipo().procesa(this);
 	}
 
 	@Override
