@@ -10,7 +10,6 @@ import asint.TinyASint.*;
 
 public class ComprobacionTipos implements Procesamiento {
 	private boolean _dirty = false;
-	private Map<String, TTipo> _tab_tipos;
 	
 	public static abstract class TTipo {
 		public boolean isNum() { return false; }
@@ -20,6 +19,8 @@ public class ComprobacionTipos implements Procesamiento {
 		public boolean isEntero() { return false; }
 		public boolean isReal() { return false; }
 		public boolean isString() { return false; }
+		public boolean isArray() { return false; }
+		public boolean isRecord() { return false; }
 		public boolean isRef() { return false; }
 	}
 	
@@ -53,7 +54,7 @@ public class ComprobacionTipos implements Procesamiento {
 		
 	}
 	
-	public static class Tipo_Ref extends TTipo {
+	public static abstract class Tipo_Ref extends TTipo {
 		public TTipo of;
 		
 		public Tipo_Ref(TTipo of) {
@@ -75,24 +76,24 @@ public class ComprobacionTipos implements Procesamiento {
 			super(of);
 			_n = n;
 		}
+		
+		public boolean isArray() { return true; }
 	}
 	
 	public static class TTipo_Record extends TTipo {
-		public Map<String, TTipo> campos;
+		public Map<String, Campo> campos;
 		
 		public TTipo_Record(Campo c) {
-			campos = new HashMap<String, TTipo>();
-			campos.put(c.identificador().toString(), c.getTipo());
+			campos = new HashMap<String, Campo>();
+			campos.put(c.identificador().toString(), c);
 		}
 		
 		public TTipo_Record(TTipo_Record r, Campo c) {
 			campos = r.campos;
-			campos.put(c.identificador().toString(), c.getTipo());
+			campos.put(c.identificador().toString(), c);
 		}
-	}
-	
-	public ComprobacionTipos() {
-		_tab_tipos = new HashMap<String,TTipo>();
+		
+		public boolean isRecord() { return true; }
 	}
 	
 	public boolean isDirty() {
@@ -123,22 +124,22 @@ public class ComprobacionTipos implements Procesamiento {
 	}
 	
 	private boolean compatibleArray(TTipo t0, TTipo t1) {
-		return t0 instanceof Tipo_Array && t1 instanceof Tipo_Array
+		return t0.isArray() && t1.isArray()
 			&& compatible(((Tipo_Array)t0).of, ((Tipo_Array)t1).of);
 	}
 	
 	private boolean compatibleRecord(TTipo t0, TTipo t1) {
-		if (t0 instanceof TTipo_Record && t1 instanceof TTipo_Record) {
+		if (t0.isRecord() && t1.isRecord()) {
 			TTipo_Record tr0 = (TTipo_Record)t0;
 			TTipo_Record tr1 = (TTipo_Record)t1;
 			
 			if (tr0.campos.size() != tr1.campos.size()) return false;
 			
-			Iterator<TTipo> it0 = tr0.campos.values().iterator();
-			Iterator<TTipo> it1 = tr1.campos.values().iterator();
+			Iterator<Campo> it0 = tr0.campos.values().iterator();
+			Iterator<Campo> it1 = tr1.campos.values().iterator();
 			
 			while (it0.hasNext() && it1.hasNext()) {
-				if (!compatible(it0.next(),it1.next())) {
+				if (!compatible(it0.next().getTipo(),it1.next().getTipo())) {
 					return false;
 				}
 			}
@@ -202,7 +203,6 @@ public class ComprobacionTipos implements Procesamiento {
 	@Override
 	public void procesa(Type type) {
 		type.tipo().procesa(this);
-		_tab_tipos.put(type.typeName().toString(), type.tipo().getTipo());
 	}
 
 	@Override
@@ -259,7 +259,7 @@ public class ComprobacionTipos implements Procesamiento {
 
 	@Override
 	public void procesa(Tipo_iden tipo_iden) {
-		tipo_iden.setTipo(_tab_tipos.get(tipo_iden.iden().toString()));
+		tipo_iden.setTipo(tipo_iden.getVinculo().getTipo());
 	}
 
 	@Override
@@ -325,10 +325,15 @@ public class ComprobacionTipos implements Procesamiento {
 		e_igual.var().procesa(this);
 		e_igual.val().procesa(this);
 		
-		if (e_igual.var().esDesignador() && compatible(e_igual.var().getTipo(), e_igual.val().getTipo())) {
-			e_igual.setTipo(new TTipo_OK());
+		if (e_igual.var().esDesignador()) {
+			if (compatible(e_igual.var().getTipo(), e_igual.val().getTipo())) {
+				e_igual.setTipo(new TTipo_OK());
+			} else {
+				error(e_igual);
+			}	
 		} else {
 			error(e_igual);
+			System.out.println("La parte izquierda no es un designador");
 		}
 	}
 
@@ -703,8 +708,8 @@ public class ComprobacionTipos implements Procesamiento {
 		indexacion.arg0().procesa(this);
 		indexacion.arg1().procesa(this);
 		
-		if (indexacion.arg1().getTipo().isEntero() && indexacion.arg0().getTipo() instanceof Tipo_Array) {
-			indexacion.setTipo(((Tipo_Array) indexacion.arg0().getTipo()).of);
+		if (indexacion.arg1().getTipo().isEntero() && indexacion.arg0().getTipo().isArray()) {
+			indexacion.setTipo(((Tipo_Ref) indexacion.arg0().getTipo()).of);
 		} else {
 			error(indexacion);
 		}
@@ -714,9 +719,9 @@ public class ComprobacionTipos implements Procesamiento {
 	public void procesa(Acc_registro acc_registro) {
 		// TODO Auto-generated method stub
 		acc_registro.registro().procesa(this);
-		if (acc_registro.registro().getTipo() instanceof TTipo_Record) {
+		if (acc_registro.registro().getTipo().isRecord()) {
 			TTipo_Record r = (TTipo_Record) acc_registro.registro().getTipo();
-			acc_registro.setTipo(r.campos.get(acc_registro.campo().toString()));
+			acc_registro.setTipo(r.campos.get(acc_registro.campo().toString()).getTipo());
 		} else {
 			error(acc_registro);
 		}
@@ -726,9 +731,9 @@ public class ComprobacionTipos implements Procesamiento {
 	public void procesa(Acc_registro_indirecto acc_registro_in) {
 		// TODO Auto-generated method stub
 		acc_registro_in.registro().procesa(this);
-		if (acc_registro_in.registro().getTipo() instanceof TTipo_Record) {
+		if (acc_registro_in.registro().getTipo().isRecord()) {
 			TTipo_Record r = (TTipo_Record) acc_registro_in.registro().getTipo();
-			acc_registro_in.setTipo(r.campos.get(acc_registro_in.campo().toString()));
+			acc_registro_in.setTipo(r.campos.get(acc_registro_in.campo().toString()).getTipo());
 		} else {
 			error(acc_registro_in);
 		}

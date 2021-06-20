@@ -533,7 +533,10 @@ public class Etiquetado implements Procesamiento {
 	@Override
 	public void procesa(Acc_registro acc_registro) {
 		// TODO Auto-generated method stub
-
+		acc_registro.etqi = _etq;
+		acc_registro.registro().procesa(this);
+		_etq += 2;
+		acc_registro.etqs = _etq;
 	}
 
 	@Override

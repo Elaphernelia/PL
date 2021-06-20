@@ -69,6 +69,7 @@ import asint.TinyASint.Var;
 import asint.TinyASint.Verdadero;
 import asint.TinyASint.While;
 import asint.TinyASint.Write;
+import procesamientos.ComprobacionTipos.TTipo_Record;
 
 public class AsignaEspacio implements Procesamiento {
 	private int _dir = 0;
@@ -193,8 +194,10 @@ public class AsignaEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(Tipo_iden tipo_iden) {
-		// TODO Auto-generated method stub
-
+		tipo_iden.dir = tipo_iden.getVinculo().dir;
+		tipo_iden.size = tipo_iden.getVinculo().size;
+		tipo_iden.nivel = tipo_iden.getVinculo().nivel;
+		tipo_iden.basesize = tipo_iden.getVinculo().basesize;
 	}
 
 	@Override
@@ -221,12 +224,14 @@ public class AsignaEspacio implements Procesamiento {
 	public void procesa(Campos_uno campos_uno) {
 		campos_uno.campo().procesa(this);
 		campos_uno.size = campos_uno.campo().size;
+		campos_uno.campo().despl = 0;
 	}
 
 	@Override
 	public void procesa(Campos_muchos campos_muchos) {
 		campos_muchos.campos().procesa(this);
 		campos_muchos.campo().procesa(this);
+		campos_muchos.campo().despl = campos_muchos.campos().size; 
 		campos_muchos.size = campos_muchos.campos().size + campos_muchos.campo().size;
 	}
 
@@ -234,6 +239,7 @@ public class AsignaEspacio implements Procesamiento {
 	public void procesa(Campo campo) {
 		campo.tipo().procesa(this);
 		campo.size = campo.tipo().size;
+		campo.basesize = campo.tipo().basesize;
 	}
 
 	@Override
@@ -476,7 +482,12 @@ public class AsignaEspacio implements Procesamiento {
 	@Override
 	public void procesa(Acc_registro acc_registro) {
 		// TODO Auto-generated method stub
-
+		acc_registro.registro().procesa(this);
+		TTipo_Record tr = (TTipo_Record) acc_registro.registro().getTipo();
+		Campo c = tr.campos.get(acc_registro.campo().toString());
+		acc_registro.size = c.size;
+		acc_registro.basesize = c.basesize;
+		tr = null;
 	}
 
 	@Override

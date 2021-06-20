@@ -94,6 +94,7 @@ public class TinyASint {
 	public static class Campo extends Genero {
 		private Tipo _tipo;
 		private StringLocalizado _identificador;
+		public int despl = -1;
 		
 		public Campo(Tipo tipo, StringLocalizado identificador) {
 			_tipo = tipo; _identificador = identificador;
@@ -442,6 +443,7 @@ public class TinyASint {
 	
 	public static class Tipo_iden extends Tipo {
 		private StringLocalizado _iden;
+		private Tipo _v;
 		
 		public Tipo_iden(StringLocalizado iden) {
 			_iden = iden;
@@ -454,6 +456,14 @@ public class TinyASint {
 		@Override
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
+		}
+		
+		public void setVinculo(Tipo v) {
+			_v = v;
+		}
+		
+		public Tipo getVinculo() {
+			return _v;
 		}
 	}
 	

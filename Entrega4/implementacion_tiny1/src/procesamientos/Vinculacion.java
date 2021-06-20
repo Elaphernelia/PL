@@ -9,6 +9,7 @@ import java.util.Stack;
 
 import alex.StringLocalizado;
 import asint.TinyASint.*;
+import procesamientos.ComprobacionTipos.TTipo_Record;
 
 public class Vinculacion implements Procesamiento {
 	private TablaSimbolos _t_sim;
@@ -147,6 +148,7 @@ public class Vinculacion implements Procesamiento {
 		} else {
 			_t_sim.put(id, var);
 		}
+		var.tipo().procesa(this);
 	}
 
 	@Override
@@ -157,8 +159,10 @@ public class Vinculacion implements Procesamiento {
 		if (_t_sim.contieneAct(id)) {
 			errorDec(id);
 		} else {
-			_t_sim.put(id, type);
+			_t_sim.put(id, type.tipo());
 		}
+		
+		type.tipo().procesa(this);
 	}
 
 	@Override
@@ -221,22 +225,26 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(Tipo_array tipo_array) {
-		// Nada
+		tipo_array.tipo().procesa(this);
 	}
 
 	@Override
 	public void procesa(Tipo_record tipo_record) {
-		// Nada
+		tipo_record.campos().procesa(this);
 	}
 
 	@Override
 	public void procesa(Tipo_pointer tipo_pointer) {
-		// Nada
+		tipo_pointer.tipo().procesa(this);
 	}
 
 	@Override
 	public void procesa(Tipo_iden tipo_iden) {
-		// Nada
+		if (!_t_sim.contieneAny(tipo_iden.iden())) {
+			errorNoDec(tipo_iden.iden());
+		} else {
+			tipo_iden.setVinculo((Tipo) _t_sim.get(tipo_iden.iden()).gen);
+		}
 	}
 
 	@Override
@@ -261,17 +269,19 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(Campos_uno campos_uno) {
-		// Nada
+		campos_uno.campo().procesa(this);
 	}
 
 	@Override
 	public void procesa(Campos_muchos campos_muchos) {
-		// Nada
+		campos_muchos.campos().procesa(this);
+		campos_muchos.campo().procesa(this);
 	}
 
 	@Override
 	public void procesa(Campo campo) {
 		// Nada
+		campo.tipo().procesa(this);
 	}
 
 	@Override

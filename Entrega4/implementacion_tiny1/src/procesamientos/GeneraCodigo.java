@@ -2,6 +2,7 @@ package procesamientos;
 
 import asint.TinyASint.*;
 import maquinaP.MaquinaP;
+import procesamientos.ComprobacionTipos.TTipo_Record;
 
 public class GeneraCodigo implements Procesamiento {
 	private MaquinaP _p;
@@ -610,7 +611,12 @@ public class GeneraCodigo implements Procesamiento {
 	@Override
 	public void procesa(Acc_registro acc_registro) {
 		// TODO Auto-generated method stub
-
+		acc_registro.registro().procesa(this);
+		// Apilar desplazamiento del campo
+		TTipo_Record tr = (TTipo_Record) acc_registro.registro().getTipo();
+		int despl = tr.campos.get(acc_registro.campo().toString()).despl;
+		_p.ponInstruccion(_p.apilaInt(despl));
+		_p.ponInstruccion(_p.suma());
 	}
 
 	@Override
