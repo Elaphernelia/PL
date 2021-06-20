@@ -18,12 +18,12 @@ public class Vinculacion implements Procesamiento {
 	public Vinculacion() {
 		_t_sim = new TablaSimbolos();
 	}
-	
+
 	public boolean isDirty() {
 		return _dirty;
 	}
 	
-	private class TablaSimbolos {
+	private static class TablaSimbolos {
 		private Map<String, DecInfo> _tabla_sim_act;       // la tabla de símbolos actual
 		private Stack<Map<String, DecInfo>> _tablas_sim;   // Todas las tablas de símbolos
 		
@@ -81,7 +81,7 @@ public class Vinculacion implements Procesamiento {
 	}
 	
 	// "struct" con la info para reportar errores mejor
-	private class DecInfo {
+	private static class DecInfo {
 		public int fila;
 		public int col;
 		public Genero gen;
@@ -94,6 +94,64 @@ public class Vinculacion implements Procesamiento {
 
 		public String toString() {
 			return Integer.toString(fila) + ":" + Integer.toString(col);
+		}
+	}
+	
+	private class VinculacionPointer implements Procesamiento {
+		public void procesa(Decs_muchas decs_muchas) {
+			decs_muchas.decs().procesa(this);
+			decs_muchas.dec().procesa(this);
+		}
+		
+		public void procesa(Decs_una decs_una) {
+			decs_una.dec().procesa(this);
+		}
+		
+		public void procesa(Var var) {
+			var.tipo().procesa(this);
+		}
+		
+		public void procesa(Type type) {
+			type.tipo().procesa(this);
+		}
+		
+		public void procesa(Tipo_int t) {}
+		public void procesa(Tipo_real t) {}
+		public void procesa(Tipo_bool t) {}
+		public void procesa(Tipo_string t) {}
+		
+		// El alma de la fiesta
+		public void procesa(Tipo_pointer t) {
+			t.tipo().procesa(this);
+		}
+		
+		public void procesa(Tipo_iden tipo_iden) {
+			if (!_t_sim.contieneAny(tipo_iden.iden())) {
+				errorNoDec(tipo_iden.iden());
+			} else {
+				tipo_iden.setVinculo((Tipo) _t_sim.get(tipo_iden.iden()).gen);
+			}
+		}
+		
+		public void procesa(Tipo_array t) {
+			t.tipo().procesa(this);
+		}
+		
+		public void procesa(Tipo_record t) {
+			t.campos().procesa(this);
+		}
+		
+		public void procesa(Campos_uno c) {
+			c.campo().procesa(this);
+		}
+		
+		public void procesa(Campos_muchos c) {
+			c.campos().procesa(this);
+			c.campo().procesa(this);
+		}
+		
+		public void procesa(Campo c) {
+			c.tipo().procesa(this);
 		}
 	}
 	
@@ -123,9 +181,10 @@ public class Vinculacion implements Procesamiento {
 	public void procesa(Prog_con_decs prog) {
 		// Crea (si el nivel es mayor que 0) y pobla la tabla de símbolos
 		prog.decs().procesa(this);
+		prog.decs().procesa(new VinculacionPointer());
 		prog.insts().procesa(this);
 	}
-
+	
 	@Override
 	public void procesa(Decs_una decs) {
 		// Construye
@@ -162,7 +221,7 @@ public class Vinculacion implements Procesamiento {
 			errorDec(id);
 		} else {
 			_t_sim.put(id, type.tipo());
-		}		
+		}
 	}
 
 	@Override
@@ -235,7 +294,7 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(Tipo_pointer tipo_pointer) {
-		tipo_pointer.tipo().procesa(this);
+		// Se hace en la segunda pasada en VinculaPointer
 	}
 
 	@Override

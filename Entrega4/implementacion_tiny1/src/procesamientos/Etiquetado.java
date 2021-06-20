@@ -227,14 +227,18 @@ public class Etiquetado implements Procesamiento {
 
 	@Override
 	public void procesa(New new_) {
-		// TODO Auto-generated method stub
-
+		new_.etqi = _etq;
+		new_.exp().procesa(this);;
+		_etq += 2;
+		new_.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Delete delete) {
-		// TODO Auto-generated method stub
-
+		delete.etqi = _etq;
+		delete.exp().procesa(this);
+		_etq++;
+		delete.etqs = _etq;
 	}
 
 	@Override
@@ -542,13 +546,19 @@ public class Etiquetado implements Procesamiento {
 	@Override
 	public void procesa(Acc_registro_indirecto acc_registro_in) {
 		// TODO Auto-generated method stub
-
+		acc_registro_in.etqi = _etq;
+		acc_registro_in.registro().procesa(this);
+		_etq += 3;
+		acc_registro_in.etqs = _etq;
 	}
 
 	@Override
 	public void procesa(Indireccion indireccion) {
 		// TODO Auto-generated method stub
-
+		indireccion.etqi = _etq;
+		indireccion.arg().procesa(this);
+		_etq++;
+		indireccion.etqs = _etq;
 	}
 
 }

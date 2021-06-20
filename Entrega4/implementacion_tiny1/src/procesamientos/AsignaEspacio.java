@@ -70,6 +70,7 @@ import asint.TinyASint.Verdadero;
 import asint.TinyASint.While;
 import asint.TinyASint.Write;
 import procesamientos.ComprobacionTipos.TTipo_Record;
+import procesamientos.ComprobacionTipos.TTipo_Pointer;
 
 public class AsignaEspacio implements Procesamiento {
 	private int _dir = 0;
@@ -190,6 +191,7 @@ public class AsignaEspacio implements Procesamiento {
 	public void procesa(Tipo_pointer tipo_pointer) {
 		tipo_pointer.tipo().procesa(this);
 		tipo_pointer.size = 1;
+		tipo_pointer.basesize = tipo_pointer.tipo().size;
 	}
 
 	@Override
@@ -487,19 +489,24 @@ public class AsignaEspacio implements Procesamiento {
 		Campo c = tr.campos.get(acc_registro.campo().toString());
 		acc_registro.size = c.size;
 		acc_registro.basesize = c.basesize;
-		tr = null;
 	}
 
 	@Override
 	public void procesa(Acc_registro_indirecto acc_registro_in) {
 		// TODO Auto-generated method stub
-
+		acc_registro_in.registro().procesa(this);
+		acc_registro_in.registro().procesa(this);
+		TTipo_Pointer p = (TTipo_Pointer) acc_registro_in.registro().getTipo();
+		TTipo_Record tr = (TTipo_Record) p.of;
+		Campo c = tr.campos.get(acc_registro_in.campo().toString());
+		acc_registro_in.size = c.size;
+		acc_registro_in.basesize = c.basesize;
 	}
 
 	@Override
 	public void procesa(Indireccion indireccion) {
 		// TODO Auto-generated method stub
-
+		indireccion.arg().procesa(this);
 	}
 
 }
