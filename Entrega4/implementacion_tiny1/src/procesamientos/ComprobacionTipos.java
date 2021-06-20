@@ -21,36 +21,38 @@ public class ComprobacionTipos implements Procesamiento {
 	
 	public static abstract class TTipo {
 		public boolean isNum() { return false; }
+		public boolean isOK() { return false; }
+		public boolean isError() { return false; }
+		public boolean isBool() { return false; }
+		public boolean isEntero() { return false; }
+		public boolean isReal() { return false; }
+		public boolean isString() { return false; }
 	}
 	
 	public static class Tipo_OK extends TTipo {
-
+		public boolean isOK() { return true; }
 	}
 	
 	public static class Tipo_Error extends TTipo {
-		
+		public boolean isError() { return true; }
 	}
 	
 	public static class Tipo_Bool extends TTipo {
-		
+		public boolean isBool() { return true; }
 	}
 	
 	public static class Tipo_Entero extends TTipo {
-		@Override
 		public boolean isNum() { return true; }
+		public boolean isEntero() { return true; }
 	}
 	
 	public static class Tipo_Real extends TTipo {
-		@Override
 		public boolean isNum() { return true; }
+		public boolean isReal() { return true; }
 	}
 	
 	public static class Tipo_String extends TTipo {
-		
-	}
-	
-	public static class Tipo_Pointer extends TTipo {
-		public TTipo of;
+		public boolean isString() { return true; }
 	}
 	
 	public static class Tipo_Null extends TTipo {
@@ -58,14 +60,24 @@ public class ComprobacionTipos implements Procesamiento {
 	}
 	
 	public static class Tipo_Ref extends TTipo {
+		public TTipo of;
 		
+		public Tipo_Ref(TTipo of) {
+			this.of = of;
+		}
 	}
 	
-	public static class Tipo_Array extends TTipo {
-		public TTipo of;
-		public int n;
+	public static class Tipo_Pointer extends Tipo_Ref {
+		public Tipo_Pointer(TTipo of) {
+			super(of);
+		}
+	}
+	
+	public static class Tipo_Array extends Tipo_Ref {
+		public int _n;
 		public Tipo_Array(int n, TTipo of) {
-			this.n = n; this.of = of;
+			super(of);
+			_n = n;
 		}
 	}
 	
@@ -98,9 +110,9 @@ public class ComprobacionTipos implements Procesamiento {
 	}
 
 	private TTipo compatibleNumero(TTipo t0, TTipo t1) {
-		if (t0 instanceof Tipo_Entero && t1 instanceof Tipo_Entero) {
+		if (t0.isEntero() && t1.isEntero()) {
 			return new Tipo_Entero();
-		} else if ( t0 instanceof Tipo_Real && t1.isNum()) {
+		} else if ( t0.isReal() && t1.isNum()) {
 			return new Tipo_Real();
 		}
 		
@@ -143,14 +155,14 @@ public class ComprobacionTipos implements Procesamiento {
 	}
 	
 	private boolean compatibleCmp(TTipo t0, TTipo t1) {
-		return (t0 instanceof Tipo_Bool && t1 instanceof Tipo_Bool)
-			|| (t0 instanceof Tipo_String && t1 instanceof Tipo_String)
+		return (t0.isBool() && t1.isBool())
+			|| (t0.isString() && t1.isString())
 			|| (t0.isNum() && t1.isNum());
 	}
 	
 	private boolean compatibleMismoBasico(TTipo t0, TTipo t1)  {
-		return ((t0 instanceof Tipo_Bool && t1 instanceof Tipo_Bool)
-			|| (t0 instanceof Tipo_String && t1 instanceof Tipo_String));
+		return ((t0.isBool() && t1.isBool())
+			|| (t0.isString() && t1.isString()));
 	}
 	
 	private boolean compatible(TTipo t0, TTipo t1) {
@@ -303,8 +315,8 @@ public class ComprobacionTipos implements Procesamiento {
 	public void procesa(Insts_muchas insts_muchas) {
 		insts_muchas.insts().procesa(this);
 		insts_muchas.inst().procesa(this);
-		if (insts_muchas.insts().getTipo() instanceof Tipo_OK
-			&& insts_muchas.inst().getTipo() instanceof Tipo_OK) {
+		if (insts_muchas.insts().getTipo().isOK()
+			&& insts_muchas.inst().getTipo().isOK()) {
 			insts_muchas.setTipo(new Tipo_OK());
 			
 		} else {
@@ -328,7 +340,7 @@ public class ComprobacionTipos implements Procesamiento {
 		if_.condicion().procesa(this);
 		if_.pinst().procesa(this);
 		
-		if (if_.condicion().getTipo() instanceof Tipo_Bool && if_.pinst().getTipo() instanceof Tipo_OK) {
+		if (if_.condicion().getTipo().isBool() && if_.pinst().getTipo().isOK()) {
 			if_.setTipo(new Tipo_OK());
 		} else {
 			error(if_);
@@ -341,7 +353,7 @@ public class ComprobacionTipos implements Procesamiento {
 		ifelse.pinst().procesa(this);
 		ifelse.pinstelse().procesa(this);
 		
-		if (ifelse.condicion().getTipo() instanceof Tipo_Bool && ifelse.pinst().getTipo() instanceof Tipo_OK && ifelse.pinstelse().getTipo() instanceof Tipo_OK) {
+		if (ifelse.condicion().getTipo().isBool() && ifelse.pinst().getTipo().isOK() && ifelse.pinstelse().getTipo().isOK()) {
 			ifelse.setTipo(new Tipo_OK());
 		} else {
 			error(ifelse);
@@ -353,7 +365,7 @@ public class ComprobacionTipos implements Procesamiento {
 		while_.condicion().procesa(this);
 		while_.pinst().procesa(this);
 		
-		if (while_.condicion().getTipo() instanceof Tipo_Bool && while_.pinst().getTipo() instanceof Tipo_OK) {
+		if (while_.condicion().getTipo().isBool() && while_.pinst().getTipo().isOK()) {
 			while_.setTipo(new Tipo_OK());
 		} else {
 			error(while_);
@@ -365,7 +377,7 @@ public class ComprobacionTipos implements Procesamiento {
 		read.exp().procesa(this);
 		Exp e = read.exp();
 		
-		if (e.esDesignador() && (e.getTipo() instanceof Tipo_Entero || e.getTipo() instanceof Tipo_Real || e.getTipo() instanceof Tipo_String)) {
+		if (e.esDesignador() && (e.getTipo().isEntero() || e.getTipo().isReal() || e.getTipo().isString())) {
 			read.setTipo(new Tipo_OK());
 		} else {
 			error(read);
@@ -377,7 +389,7 @@ public class ComprobacionTipos implements Procesamiento {
 		write.exp().procesa(this);
 		Exp e = write.exp();
 		
-		if (e.getTipo() instanceof Tipo_Entero || e.getTipo() instanceof Tipo_Real || e.getTipo() instanceof Tipo_String || e.getTipo() instanceof Tipo_Bool) {
+		if (e.getTipo().isEntero() || e.getTipo().isReal() || e.getTipo().isString() || e.getTipo().isBool()) {
 			write.setTipo(new Tipo_OK());
 		} else {
 			error(write);
@@ -448,7 +460,7 @@ public class ComprobacionTipos implements Procesamiento {
 	public void procesa(Param_r_con_muchas param_r_con_muchas) {
 		param_r_con_muchas.pr().procesa(this);
 		param_r_con_muchas.param().procesa(this);
-		if (param_r_con_muchas.pr().getTipo() instanceof Tipo_OK) {
+		if (param_r_con_muchas.pr().getTipo().isOK()) {
 			param_r_con_muchas.setTipo(param_r_con_muchas.param().getTipo());
 		} else {
 			error(param_r_con_muchas);
@@ -506,7 +518,7 @@ public class ComprobacionTipos implements Procesamiento {
 		aop.arg0().procesa(this);
 		aop.arg1().procesa(this);
 		
-		if (aop.arg0().getTipo() instanceof Tipo_Entero && aop.arg1().getTipo() instanceof Tipo_Entero) {
+		if (aop.arg0().getTipo().isEntero() && aop.arg1().getTipo().isEntero()) {
 			aop.setTipo(new Tipo_Entero());
 		} else if (aop.arg0().getTipo().isNum() && aop.arg1().getTipo().isNum()) {
 			aop.setTipo(new Tipo_Real());
@@ -520,7 +532,7 @@ public class ComprobacionTipos implements Procesamiento {
 		aop.arg0().procesa(this);
 		aop.arg1().procesa(this);
 		
-		if (aop.arg0().getTipo() instanceof Tipo_Entero && aop.arg1().getTipo() instanceof Tipo_Entero) {
+		if (aop.arg0().getTipo().isEntero() && aop.arg1().getTipo().isEntero()) {
 			aop.setTipo(new Tipo_Entero());
 		} else if (aop.arg0().getTipo().isNum() && aop.arg1().getTipo().isNum()) {
 			aop.setTipo(new Tipo_Real());
@@ -534,7 +546,7 @@ public class ComprobacionTipos implements Procesamiento {
 		bop.arg0().procesa(this);
 		bop.arg1().procesa(this);
 		
-		if (bop.arg0().getTipo() instanceof Tipo_Bool && bop.arg1().getTipo() instanceof Tipo_Bool) {
+		if (bop.arg0().getTipo().isBool() && bop.arg1().getTipo().isBool()) {
 			bop.setTipo(new Tipo_Bool());
 		} else {
 			error(bop);
@@ -546,7 +558,7 @@ public class ComprobacionTipos implements Procesamiento {
 		bop.arg0().procesa(this);
 		bop.arg1().procesa(this);
 		
-		if (bop.arg0().getTipo() instanceof Tipo_Bool && bop.arg1().getTipo() instanceof Tipo_Bool) {
+		if (bop.arg0().getTipo().isBool() && bop.arg1().getTipo().isBool()) {
 			bop.setTipo(new Tipo_Bool());
 		} else {
 			error(bop);
@@ -630,7 +642,7 @@ public class ComprobacionTipos implements Procesamiento {
 		aop.arg0().procesa(this);
 		aop.arg1().procesa(this);
 		
-		if (aop.arg0().getTipo() instanceof Tipo_Entero && aop.arg1().getTipo() instanceof Tipo_Entero) {
+		if (aop.arg0().getTipo().isEntero() && aop.arg1().getTipo().isEntero()) {
 			aop.setTipo(new Tipo_Entero());
 		} else if (aop.arg0().getTipo().isNum() && aop.arg1().getTipo().isNum()) {
 			aop.setTipo(new Tipo_Real());
@@ -644,7 +656,7 @@ public class ComprobacionTipos implements Procesamiento {
 		aop.arg0().procesa(this);
 		aop.arg1().procesa(this);
 		
-		if (aop.arg0().getTipo() instanceof Tipo_Entero && aop.arg1().getTipo() instanceof Tipo_Entero) {
+		if (aop.arg0().getTipo().isEntero() && aop.arg1().getTipo().isEntero()) {
 			aop.setTipo(new Tipo_Entero());
 		} else if (aop.arg0().getTipo().isNum() && aop.arg1().getTipo().isNum()) {
 			aop.setTipo(new Tipo_Real());
@@ -658,7 +670,7 @@ public class ComprobacionTipos implements Procesamiento {
 		aop.arg0().procesa(this);
 		aop.arg1().procesa(this);
 		
-		if (aop.arg0().getTipo() instanceof Tipo_Entero && aop.arg1().getTipo() instanceof Tipo_Entero) {
+		if (aop.arg0().getTipo().isEntero() && aop.arg1().getTipo().isEntero()) {
 			aop.setTipo(new Tipo_Entero());
 		} else {
 			error(aop);
@@ -669,9 +681,9 @@ public class ComprobacionTipos implements Procesamiento {
 	public void procesa(M_unario m_unario) {
 		m_unario.arg().procesa(this);
 		
-		if (m_unario.arg().getTipo() instanceof Tipo_Entero) {
+		if (m_unario.arg().getTipo().isEntero()) {
 			m_unario.setTipo(new Tipo_Entero());
-		} else if (m_unario.arg().getTipo() instanceof Tipo_Real) {
+		} else if (m_unario.arg().getTipo().isReal()) {
 			m_unario.setTipo(new Tipo_Real());
 		} else {
 			error(m_unario);
@@ -682,7 +694,7 @@ public class ComprobacionTipos implements Procesamiento {
 	public void procesa(Not not) {
 		not.arg().procesa(this);
 
-		if (not.getTipo() instanceof Tipo_Bool) {
+		if (not.getTipo().isBool()) {
 			not.setTipo(new Tipo_Bool());
 		} else {
 			error(not);
@@ -694,7 +706,7 @@ public class ComprobacionTipos implements Procesamiento {
 		indexacion.arg0().procesa(this);
 		indexacion.arg1().procesa(this);
 		
-		if (indexacion.arg1().getTipo() instanceof Tipo_Entero && indexacion.arg0().getTipo() instanceof Tipo_Array) {
+		if (indexacion.arg1().getTipo().isEntero() && indexacion.arg0().getTipo() instanceof Tipo_Array) {
 			indexacion.setTipo(((Tipo_Array) indexacion.arg0().getTipo()).of);
 		} else {
 			error(indexacion);

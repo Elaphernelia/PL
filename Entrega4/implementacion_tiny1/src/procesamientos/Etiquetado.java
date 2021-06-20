@@ -401,7 +401,7 @@ public class Etiquetado implements Procesamiento {
 		menor.etqi = _etq;
 		menor.arg0().procesa(this);
 		if (menor.arg0().esDesignador()) _etq++;
-		if (menor.arg0().getTipo() instanceof Tipo_Bool) _etq++;
+		if (menor.arg0().getTipo().isBool()) _etq++;
 		menor.arg1().procesa(this);
 		if (menor.arg1().esDesignador()) _etq++;
 		_etq++;
@@ -413,7 +413,7 @@ public class Etiquetado implements Procesamiento {
 		men_ig.etqi = _etq;
 		men_ig.arg0().procesa(this);
 		if (men_ig.arg0().esDesignador()) _etq++;
-		if (men_ig.arg0().getTipo() instanceof Tipo_Bool) _etq++;
+		if (men_ig.arg0().getTipo().isBool()) _etq++;
 		men_ig.arg1().procesa(this);
 		if (men_ig.arg1().esDesignador()) _etq++;
 		_etq++;
@@ -425,7 +425,7 @@ public class Etiquetado implements Procesamiento {
 		mayor.etqi = _etq;
 		mayor.arg1().procesa(this);
 		if (mayor.arg1().esDesignador()) _etq++;
-		if (mayor.arg0().getTipo() instanceof Tipo_Bool) _etq++;
+		if (mayor.arg0().getTipo().isBool()) _etq++;
 		mayor.arg0().procesa(this);
 		if (mayor.arg0().esDesignador()) _etq++;
 		_etq++;
@@ -437,7 +437,7 @@ public class Etiquetado implements Procesamiento {
 		may_ig.etqi = _etq;
 		may_ig.arg1().procesa(this);
 		if (may_ig.arg1().esDesignador()) _etq++;
-		if (may_ig.arg0().getTipo() instanceof Tipo_Bool) _etq++;
+		if (may_ig.arg0().getTipo().isBool()) _etq++;
 		may_ig.arg0().procesa(this);
 		if (may_ig.arg0().esDesignador()) _etq++;
 		_etq++;
