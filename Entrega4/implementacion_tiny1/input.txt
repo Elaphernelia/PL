@@ -1,17 +1,16 @@
+var int i;
 type int myInt;
-var pointer tLinkedList act;
-type record {
-	int val;
-	pointer tLinkedList next
-} tLinkedList;
-var tLinkedList ll;
-var int i
+type array[3] of myInt intarr;
+var intarr fi
 &&
-i = 0;
-act = *ll;
+i = 2;
+fi[0] = 0;
+fi[1] = 1;
+write "fib(0) = 0"; nl; write "fib(1) = 1"; nl;
 while (i < 10) do
-	new act->next;
-	act->val = i;
-	act = act->next;
+	fi[2] = fi[0] + fi[1];
+	fi[0] = fi[1];
+	fi[1] = fi[2];
+	write "fib("; write i; write ") = "; write fi[2]; nl; 
 	i = i + 1
 endwhile
