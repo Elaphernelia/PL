@@ -34,134 +34,96 @@ public class GeneraCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Prog_con_decs prog) {
-		prog.decs().procesa(this); // Codigo de procedimientos
+		prog.decs().procesa(this); // Gen. Codigo de procedimientos
 		prog.insts().procesa(this);
 		checkNinsts(prog);
 	}
 
 	@Override
 	public void procesa(Decs_una dec) {
-		// TODO Auto-generated method stub
-
+		dec.dec().procesa(this);
 	}
 
 	@Override
 	public void procesa(Decs_muchas dec) {
-		// TODO Auto-generated method stub
-
+		dec.decs().procesa(this);
+		dec.dec().procesa(this);
 	}
 
 	@Override
 	public void procesa(Var var) {
-		// TODO Auto-generated method stub
-
+		// No genera instrucciones
 	}
 
 	@Override
 	public void procesa(Type type) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void procesa(Proc proc) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void procesa(Param_f_sin param_f_sin) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void procesa(Param_f_con_una param_f_con_una) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void procesa(Param_f_con_muchas param_f_con_muchas) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void procesa(Param_f_ref param_f_ref) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void procesa(Param_f_noref param_f_noref) {
-		// TODO Auto-generated method stub
+		// No genera instrucciones
 
 	}
 
 	@Override
 	public void procesa(Tipo_array tipo_array) {
-		// TODO Auto-generated method stub
+		// No genera instrucciones
 
 	}
 
 	@Override
 	public void procesa(Tipo_record tipo_record) {
-		// TODO Auto-generated method stub
+		// No genera instrucciones
 
 	}
 
 	@Override
 	public void procesa(Tipo_pointer tipo_pointer) {
-		// TODO Auto-generated method stub
+		// No genera instrucciones
 
 	}
 
 	@Override
 	public void procesa(Tipo_iden tipo_iden) {
-		// TODO Auto-generated method stub
+		// No genera instrucciones
 
 	}
 
 	@Override
 	public void procesa(Tipo_int tipo_int) {
-		// TODO Auto-generated method stub
+		// No genera instrucciones
 
 	}
 
 	@Override
 	public void procesa(Tipo_real tipo_real) {
-		// TODO Auto-generated method stub
+		// No genera instrucciones
 
 	}
 
 	@Override
 	public void procesa(Tipo_bool tipo_bool) {
-		// TODO Auto-generated method stub
+		// No genera instrucciones
 
 	}
 
 	@Override
 	public void procesa(Tipo_string tipo_string) {
-		// TODO Auto-generated method stub
+		// No genera instrucciones
 
 	}
 
 	@Override
 	public void procesa(Campos_uno campos_uno) {
-		// TODO Auto-generated method stub
+		// No genera instrucciones
 
 	}
 
 	@Override
 	public void procesa(Campos_muchos campos_muchos) {
-		// TODO Auto-generated method stub
+		// No genera instrucciones
 
 	}
 
 	@Override
 	public void procesa(Campo campo) {
-		// TODO Auto-generated method stub
+		// No genera instrucciones
 
 	}
 
@@ -271,15 +233,8 @@ public class GeneraCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Delete delete) {
-		// TODO Auto-generated method stub
 		delete.exp().procesa(this);
 		_p.ponInstruccion(_p.dealloc(delete.exp().basesize));
-	}
-
-	@Override
-	public void procesa(Call call) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -295,24 +250,6 @@ public class GeneraCodigo implements Procesamiento {
 	@Override
 	public void procesa(Lista_con lista_con) {
 		lista_con.insts().procesa(this);
-	}
-
-	@Override
-	public void procesa(Param_r_sin param_r_sin) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void procesa(Param_r_con_una param_r_con_una) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void procesa(Param_r_con_muchas param_r_con_muchas) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -601,8 +538,6 @@ public class GeneraCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Indexacion indexacion) {
-		// TODO Auto-generated method stub
-		// TODO Pasarlo a la memoria
 		indexacion.arg0().procesa(this);
 		indexacion.arg1().procesa(this);
 		if (indexacion.arg1().esDesignador()) _p.ponInstruccion(_p.apilaInd());
@@ -613,7 +548,6 @@ public class GeneraCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Acc_registro acc_registro) {
-		// TODO Auto-generated method stub
 		acc_registro.registro().procesa(this);
 		// Apilar desplazamiento del campo
 		TTipo_Record tr = (TTipo_Record) acc_registro.registro().getTipo();
@@ -624,7 +558,6 @@ public class GeneraCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Acc_registro_indirecto acc_registro_in) {
-		// TODO Auto-generated method stub
 		acc_registro_in.registro().procesa(this);
 		_p.ponInstruccion(_p.apilaInd());
 		
@@ -637,7 +570,6 @@ public class GeneraCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Indireccion indireccion) {
-		// TODO Auto-generated method stub
 		indireccion.arg().procesa(this);
 		_p.ponInstruccion(_p.apilaInd());
 	}

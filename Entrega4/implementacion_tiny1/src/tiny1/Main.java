@@ -85,7 +85,6 @@ public class Main {
 		prog.procesa(e);
 		System.out.println("Procesado etiquetado");
 		
-		// TODO: Obtener tamaños de la asignacion de espacio
 		int tamdatos = prog.size;
 		int tampila = 20;
 		int tamheap = 20;

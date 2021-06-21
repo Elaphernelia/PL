@@ -1,0 +1,164 @@
+Vinculación terminada sin errores
+No se han detectado errores de tipos
+Procesado asignación de espacio
+Procesado etiquetado
+Generado código de máquina-p:
+000 apilaInt(0)
+001 apilaInt(2)
+002 desapilaind
+003 apilaInt(1)
+004 apilaInt(0)
+005 apilaInt(1)
+006 mul
+007 suma
+008 apilaInt(0)
+009 desapilaind
+010 apilaInt(1)
+011 apilaInt(1)
+012 apilaInt(1)
+013 mul
+014 suma
+015 apilaInt(1)
+016 desapilaind
+017 apilaString("fib(0) = 0")
+018 writestring
+019 apilaString("\n")
+020 writestring
+021 apilaString("fib(1) = 1")
+022 writestring
+023 apilaString("\n")
+024 writestring
+025 apilaInt(0)
+026 apilaind
+027 apilaInt(10)
+028 menornum
+029 irf(94)
+030 apilaInt(1)
+031 apilaInt(2)
+032 apilaInt(1)
+033 mul
+034 suma
+035 apilaInt(1)
+036 apilaInt(0)
+037 apilaInt(1)
+038 mul
+039 suma
+040 apilaind
+041 apilaInt(1)
+042 apilaInt(1)
+043 apilaInt(1)
+044 mul
+045 suma
+046 apilaind
+047 suma
+048 desapilaind
+049 apilaInt(1)
+050 apilaInt(0)
+051 apilaInt(1)
+052 mul
+053 suma
+054 apilaInt(1)
+055 apilaInt(1)
+056 apilaInt(1)
+057 mul
+058 suma
+059 mueve(1)
+060 apilaInt(1)
+061 apilaInt(1)
+062 apilaInt(1)
+063 mul
+064 suma
+065 apilaInt(1)
+066 apilaInt(2)
+067 apilaInt(1)
+068 mul
+069 suma
+070 mueve(1)
+071 apilaString("fib(")
+072 writestring
+073 apilaInt(0)
+074 apilaind
+075 writeint
+076 apilaString(") = ")
+077 writestring
+078 apilaInt(1)
+079 apilaInt(2)
+080 apilaInt(1)
+081 mul
+082 suma
+083 apilaind
+084 writeint
+085 apilaString("\n")
+086 writestring
+087 apilaInt(0)
+088 apilaInt(0)
+089 apilaind
+090 apilaInt(1)
+091 suma
+092 desapilaind
+093 ira(25)
+094 stop
+-------------------------
+Ejecutando en máquina-p
+fib(0) = 0
+fib(1) = 1
+fib(2) = 1
+fib(3) = 2
+fib(4) = 3
+fib(5) = 5
+fib(6) = 8
+fib(7) = 13
+fib(8) = 21
+fib(9) = 34
+Estado final:
+Tam datos:4
+Tam heap:20
+PP:4
+Displays:
+Pila de evaluacion
+Datos
+ 0:10
+ 1:21
+ 2:34
+ 3:34
+ 4:null
+ 5:null
+ 6:null
+ 7:null
+ 8:null
+ 9:null
+ 10:null
+ 11:null
+ 12:null
+ 13:null
+ 14:null
+ 15:null
+ 16:null
+ 17:null
+ 18:null
+ 19:null
+ 20:null
+ 21:null
+ 22:null
+ 23:null
+ 24:null
+ 25:null
+ 26:null
+ 27:null
+ 28:null
+ 29:null
+ 30:null
+ 31:null
+ 32:null
+ 33:null
+ 34:null
+ 35:null
+ 36:null
+ 37:null
+ 38:null
+ 39:null
+ 40:null
+ 41:null
+ 42:null
+ 43:null
+PC:95

@@ -1,16 +1,27 @@
-var int i;
 type int myInt;
 type array[3] of myInt intarr;
-var intarr fi
+type record {
+	intarr fi;
+	int i
+} tRecord;
+type pointer tRecord tpRecord;
+var tpRecord pi;
+var pointer int i
 &&
-i = 2;
-fi[0] = 0;
-fi[1] = 1;
+new i;
+*i = 3;
+delete i;
+new pi;
+pi->i = 2;
+pi->fi[0] = 0;
+pi->fi[1] = 1;
+write (*pi).i; nl;
 write "fib(0) = 0"; nl; write "fib(1) = 1"; nl;
-while (i < 10) do
-	fi[2] = fi[0] + fi[1];
-	fi[0] = fi[1];
-	fi[1] = fi[2];
-	write "fib("; write i; write ") = "; write fi[2]; nl; 
-	i = i + 1
-endwhile
+while (pi->i < 10) do
+	pi->fi[2] = pi->fi[0] + pi->fi[1];
+	pi->fi[0] = pi->fi[1];
+	pi->fi[1] = pi->fi[2];
+	write "fib("; write pi->i; write ") = "; write pi->fi[2]; nl; 
+	pi->i = pi->i + 1
+endwhile;
+delete pi

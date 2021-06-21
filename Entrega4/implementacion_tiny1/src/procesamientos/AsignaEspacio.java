@@ -75,7 +75,7 @@ import procesamientos.ComprobacionTipos.TTipo_Pointer;
 public class AsignaEspacio implements Procesamiento {
 	private int _dir = 0;
 	private int _nivel = 0;
-	private int _maxnivel = 0;
+	private int _maxnivel = 0; // Usado para crear la maquina P
 	
 	public int getMaxNivel() {
 		return _maxnivel;
@@ -142,7 +142,6 @@ public class AsignaEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(Param_f_sin param_f_sin) {
-		param_f_sin.size = 0;
 	}
 
 	@Override
@@ -306,12 +305,6 @@ public class AsignaEspacio implements Procesamiento {
 	}
 
 	@Override
-	public void procesa(Call call) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void procesa(Bl bl) {
 		bl.bloque().procesa(this);
 	}
@@ -324,24 +317,6 @@ public class AsignaEspacio implements Procesamiento {
 	@Override
 	public void procesa(Lista_con lista_con) {
 		lista_con.insts().procesa(this);
-	}
-
-	@Override
-	public void procesa(Param_r_sin param_r_sin) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void procesa(Param_r_con_una param_r_con_una) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void procesa(Param_r_con_muchas param_r_con_muchas) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -483,7 +458,6 @@ public class AsignaEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(Acc_registro acc_registro) {
-		// TODO Auto-generated method stub
 		acc_registro.registro().procesa(this);
 		TTipo_Record tr = (TTipo_Record) acc_registro.registro().getTipo();
 		Campo c = tr.campos.get(acc_registro.campo().toString());
@@ -493,7 +467,6 @@ public class AsignaEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(Acc_registro_indirecto acc_registro_in) {
-		// TODO Auto-generated method stub
 		acc_registro_in.registro().procesa(this);
 		acc_registro_in.registro().procesa(this);
 		TTipo_Pointer p = (TTipo_Pointer) acc_registro_in.registro().getTipo();
@@ -505,8 +478,9 @@ public class AsignaEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(Indireccion indireccion) {
-		// TODO Auto-generated method stub
 		indireccion.arg().procesa(this);
+		indireccion.size = 1;
+		indireccion.basesize = indireccion.arg().size;
 	}
 
 }

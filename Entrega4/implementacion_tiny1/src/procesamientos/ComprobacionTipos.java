@@ -216,24 +216,6 @@ public class ComprobacionTipos implements Procesamiento {
 	}
 
 	@Override
-	public void procesa(Param_f_sin param_f_sin) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void procesa(Param_f_con_una param_f_con_una) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void procesa(Param_f_con_muchas param_f_con_muchas) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void procesa(Param_f_ref param_f_ref) {
 		param_f_ref.setTipo(param_f_ref.tipo().getTipo());
 	}
@@ -427,11 +409,6 @@ public class ComprobacionTipos implements Procesamiento {
 		} else {
 			error(delete);
 		}
-	}
-
-	@Override
-	public void procesa(Call call) {
-		// TODO this
 	}
 
 	@Override
@@ -738,7 +715,6 @@ public class ComprobacionTipos implements Procesamiento {
 
 	@Override
 	public void procesa(Acc_registro_indirecto acc_registro_in) {
-		// TODO Auto-generated method stub
 		acc_registro_in.registro().procesa(this);
 		if (acc_registro_in.registro().getTipo().isPointer()) {
 			TTipo_Ref p = (TTipo_Ref) acc_registro_in.registro().getTipo();

@@ -1,0 +1,126 @@
+Vinculación terminada sin errores
+No se han detectado errores de tipos
+Procesado asignación de espacio
+Procesado etiquetado
+Generado código de máquina-p:
+000 apilaInt(1)
+001 apilaInt(0)
+002 desapilaind
+003 apilaInt(2)
+004 apilaInt(0)
+005 desapilaind
+006 apilaInt(3)
+007 apilaInt(1)
+008 desapilaind
+009 apilaInt(0)
+010 apilaInt(15)
+011 desapilaind
+012 apilaInt(1)
+013 apilaind
+014 apilaInt(0)
+015 apilaind
+016 menornum
+017 irf(50)
+018 apilaInt(4)
+019 apilaInt(2)
+020 apilaind
+021 apilaInt(3)
+022 apilaind
+023 suma
+024 desapilaind
+025 apilaInt(3)
+026 apilaInt(2)
+027 mueve(1)
+028 apilaInt(2)
+029 apilaInt(4)
+030 mueve(1)
+031 apilaString("fib(")
+032 writestring
+033 apilaInt(1)
+034 apilaind
+035 writeint
+036 apilaString(") = ")
+037 writestring
+038 apilaInt(4)
+039 apilaind
+040 writeint
+041 apilaString("\n")
+042 writestring
+043 apilaInt(1)
+044 apilaInt(1)
+045 apilaind
+046 apilaInt(1)
+047 suma
+048 desapilaind
+049 ira(12)
+050 stop
+-------------------------
+Ejecutando en máquina-p
+fib(0) = 1
+fib(1) = 1
+fib(2) = 2
+fib(3) = 3
+fib(4) = 5
+fib(5) = 8
+fib(6) = 13
+fib(7) = 21
+fib(8) = 34
+fib(9) = 55
+fib(10) = 89
+fib(11) = 144
+fib(12) = 233
+fib(13) = 377
+fib(14) = 610
+Estado final:
+Tam datos:5
+Tam heap:20
+PP:5
+Displays:
+Pila de evaluacion
+Datos
+ 0:15
+ 1:15
+ 2:610
+ 3:377
+ 4:610
+ 5:null
+ 6:null
+ 7:null
+ 8:null
+ 9:null
+ 10:null
+ 11:null
+ 12:null
+ 13:null
+ 14:null
+ 15:null
+ 16:null
+ 17:null
+ 18:null
+ 19:null
+ 20:null
+ 21:null
+ 22:null
+ 23:null
+ 24:null
+ 25:null
+ 26:null
+ 27:null
+ 28:null
+ 29:null
+ 30:null
+ 31:null
+ 32:null
+ 33:null
+ 34:null
+ 35:null
+ 36:null
+ 37:null
+ 38:null
+ 39:null
+ 40:null
+ 41:null
+ 42:null
+ 43:null
+ 44:null
+PC:51

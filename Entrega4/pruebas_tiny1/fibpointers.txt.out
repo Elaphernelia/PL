@@ -1,0 +1,221 @@
+Vinculación terminada sin errores
+No se han detectado errores de tipos
+Procesado asignación de espacio
+Procesado etiquetado
+Generado código de máquina-p:
+000 apilaInt(1)
+001 alloc(1)
+002 desapilaind
+003 apilaInt(1)
+004 apilaind
+005 apilaInt(3)
+006 desapilaind
+007 apilaInt(1)
+008 dealloc(1)
+009 apilaInt(0)
+010 alloc(4)
+011 desapilaind
+012 apilaInt(0)
+013 apilaind
+014 apilaInt(3)
+015 suma
+016 apilaInt(2)
+017 desapilaind
+018 apilaInt(0)
+019 apilaind
+020 apilaInt(0)
+021 suma
+022 apilaInt(0)
+023 apilaInt(1)
+024 mul
+025 suma
+026 apilaInt(0)
+027 desapilaind
+028 apilaInt(0)
+029 apilaind
+030 apilaInt(0)
+031 suma
+032 apilaInt(1)
+033 apilaInt(1)
+034 mul
+035 suma
+036 apilaInt(1)
+037 desapilaind
+038 apilaString("fib(0) = 0")
+039 writestring
+040 apilaString("\n")
+041 writestring
+042 apilaString("fib(1) = 1")
+043 writestring
+044 apilaString("\n")
+045 writestring
+046 apilaInt(0)
+047 apilaind
+048 apilaInt(3)
+049 suma
+050 apilaind
+051 apilaInt(10)
+052 menornum
+053 irf(151)
+054 apilaInt(0)
+055 apilaind
+056 apilaInt(0)
+057 suma
+058 apilaInt(2)
+059 apilaInt(1)
+060 mul
+061 suma
+062 apilaInt(0)
+063 apilaind
+064 apilaInt(0)
+065 suma
+066 apilaInt(0)
+067 apilaInt(1)
+068 mul
+069 suma
+070 apilaind
+071 apilaInt(0)
+072 apilaind
+073 apilaInt(0)
+074 suma
+075 apilaInt(1)
+076 apilaInt(1)
+077 mul
+078 suma
+079 apilaind
+080 suma
+081 desapilaind
+082 apilaInt(0)
+083 apilaind
+084 apilaInt(0)
+085 suma
+086 apilaInt(0)
+087 apilaInt(1)
+088 mul
+089 suma
+090 apilaInt(0)
+091 apilaind
+092 apilaInt(0)
+093 suma
+094 apilaInt(1)
+095 apilaInt(1)
+096 mul
+097 suma
+098 mueve(1)
+099 apilaInt(0)
+100 apilaind
+101 apilaInt(0)
+102 suma
+103 apilaInt(1)
+104 apilaInt(1)
+105 mul
+106 suma
+107 apilaInt(0)
+108 apilaind
+109 apilaInt(0)
+110 suma
+111 apilaInt(2)
+112 apilaInt(1)
+113 mul
+114 suma
+115 mueve(1)
+116 apilaString("fib(")
+117 writestring
+118 apilaInt(0)
+119 apilaind
+120 apilaInt(3)
+121 suma
+122 apilaind
+123 writeint
+124 apilaString(") = ")
+125 writestring
+126 apilaInt(0)
+127 apilaind
+128 apilaInt(0)
+129 suma
+130 apilaInt(2)
+131 apilaInt(1)
+132 mul
+133 suma
+134 apilaind
+135 writeint
+136 apilaString("\n")
+137 writestring
+138 apilaInt(0)
+139 apilaind
+140 apilaInt(3)
+141 suma
+142 apilaInt(0)
+143 apilaind
+144 apilaInt(3)
+145 suma
+146 apilaind
+147 apilaInt(1)
+148 suma
+149 desapilaind
+150 ira(46)
+151 apilaInt(0)
+152 dealloc(4)
+153 stop
+-------------------------
+Ejecutando en máquina-p
+fib(0) = 0
+fib(1) = 1
+fib(2) = 1
+fib(3) = 2
+fib(4) = 3
+fib(5) = 5
+fib(6) = 8
+fib(7) = 13
+fib(8) = 21
+fib(9) = 34
+Estado final:
+Tam datos:2
+Tam heap:20
+PP:2
+Displays:
+Pila de evaluacion
+Datos
+ 0:23
+ 1:22
+ 2:null
+ 3:null
+ 4:null
+ 5:null
+ 6:null
+ 7:null
+ 8:null
+ 9:null
+ 10:null
+ 11:null
+ 12:null
+ 13:null
+ 14:null
+ 15:null
+ 16:null
+ 17:null
+ 18:null
+ 19:null
+ 20:null
+ 21:null
+ 22:3
+ 23:21
+ 24:34
+ 25:34
+ 26:10
+ 27:null
+ 28:null
+ 29:null
+ 30:null
+ 31:null
+ 32:null
+ 33:null
+ 34:null
+ 35:null
+ 36:null
+ 37:null
+ 38:null
+ 39:null
+ 40:null
+ 41:null
+PC:154
